@@ -11,6 +11,6 @@ export interface ResponseData {
 export interface SeoulInfoChartItem {
     id: string;
     time: string;
-    valueArea: number;
-    valueBar: number;
+    value_area: number;
+    value_bar: number;
 }

@@ -18,11 +18,11 @@ type TypeAction =
 const initState = {
     isLoading: true,
     error: null,
-    data: [{id: '', time: '', valueArea: 0, valueBar: 0}],
+    data: [{id: '', time: '', value_area: 0, value_bar: 0}],
 };
 
 const reducer: Reducer<TypeSeoulChart, TypeAction> = (
-    state: TypeSeoulInfoState,
+    state: TypeSeoulChart,
     action: TypeAction
 ) => {
     switch (action.type) {
@@ -30,8 +30,7 @@ const reducer: Reducer<TypeSeoulChart, TypeAction> = (
             const data = action.payload;
             const newData = Object.entries(data).map(data => {
                 const [time, values] = data;
-                const {id, value_area: valueArea, value_bar: valueBar} = values;
-                return {id, time, valueArea, valueBar};
+                return {time, ...values};
             });
             return {...state, isLoading: false, data: newData};
         }
@@ -46,7 +45,7 @@ const reducer: Reducer<TypeSeoulChart, TypeAction> = (
     }
 };
 
-const useSeoulData = () => {
+const useFetch = () => {
     const [state, dispatch] = useReducer(reducer, initState);
 
     const getData = async () => {
@@ -66,4 +65,4 @@ const useSeoulData = () => {
     return {state};
 };
 
-export default useSeoulData;
+export default useFetch;
