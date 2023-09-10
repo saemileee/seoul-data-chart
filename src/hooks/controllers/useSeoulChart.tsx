@@ -6,7 +6,7 @@ import {getSeoulInfo} from '../../api/seoulInfo.ts';
 interface TypeSeoulChart {
     isLoading: boolean;
     error: null | Error;
-    data: Type.SeoulInfoChartItem[];
+    data: Type.ChartItem[];
 }
 
 type TypeAction =
