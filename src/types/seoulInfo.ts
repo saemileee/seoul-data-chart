@@ -8,7 +8,7 @@ export interface ResponseData {
     [timestamp: string]: AreaInfo;
 }
 
-export interface SeoulInfoChartItem {
+export interface ChartItem {
     id: string;
     time: string;
     value_area: number;
