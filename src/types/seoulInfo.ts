@@ -7,3 +7,10 @@ export interface AreaInfo {
 export interface ResponseData {
     [timestamp: string]: AreaInfo;
 }
+
+export interface SeoulInfoChartItem {
+    id: string;
+    time: string;
+    valueArea: number;
+    valueBar: number;
+}
