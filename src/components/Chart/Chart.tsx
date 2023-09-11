@@ -61,6 +61,12 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
         setZoomCounts(prev => prev + 1);
     };
 
+    const resetZoom = () => {
+        setStartIdx(0);
+        setEndIdx(99);
+        setZoomCounts(prev => prev + 1);
+    };
+
     const handleChangeBrush = (startIndex: number, endIndex: number) => {
         debounce(() => {
             setStartIdx(startIndex!);
@@ -78,6 +84,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                 }
             }}
         >
+            <button onClick={() => resetZoom()}>Reset Zoom</button>
             <ComposedChart key={zoomCounts} width={1000} height={400} data={data}>
                 <XAxis dataKey='time' height={40}>
                     <Label value='2023년' position='insideBottom' />
