@@ -9,6 +9,7 @@ import {
     Legend,
     Cell,
     ReferenceArea,
+    Label,
 } from 'recharts';
 import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
 import {Dispatch, SetStateAction} from 'react';
@@ -24,12 +25,14 @@ interface ChartProps {
 const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     return (
         <ComposedChart width={1000} height={400} data={data} onClick={console.info}>
-            <XAxis label='2023년' dataKey='time' />
+            <XAxis dataKey='time' height={40}>
+                <Label value='2023년' position='insideBottom' />
+            </XAxis>
             <YAxis yAxisId='left' />
             <YAxis yAxisId='right' orientation='right' />
-            <Tooltip content={<CustomTooltip />} />
             <Legend />
-            <Brush />
+
+            <Tooltip content={<CustomTooltip />} />
 
             <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
                 {data.map((entry, index) => (
@@ -70,6 +73,27 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                     />
                 );
             })}
+
+            <Brush dataKey='time' travellerWidth={10} height={60} fill='#ffffff'>
+                <ComposedChart width={1000} height={400} data={data} onClick={console.info}>
+                    <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
+                        {data.map((entry, index) => (
+                            <Cell
+                                cursor='pointer'
+                                fill={entry.id === selectedKey ? ' #82ca9d' : '#abdcbe'}
+                                key={`cell-${index}`}
+                            />
+                        ))}
+                    </Bar>
+                    <Area
+                        dataKey='value_area'
+                        type='monotone'
+                        fill='#ff885c94'
+                        stroke='#ff875c'
+                        yAxisId='left'
+                    />
+                </ComposedChart>
+            </Brush>
         </ComposedChart>
     );
 };
