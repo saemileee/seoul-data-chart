@@ -56,19 +56,37 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const debounce = useDebounce();
 
     const zoomIn = () => {
+        const leftCounts = fixedIdx - startIdx;
+        const rightCounts = endIdx - fixedIdx;
+        const [leftStep, rightStep] =
+            leftCounts < rightCounts
+                ? [1, Math.floor(rightCounts / leftCounts)]
+                : [Math.floor(leftCounts / rightCounts), 1];
+
         if (startIdx + 1 !== endIdx && startIdx !== endIdx) {
             setZoomCounts(prev => prev + 1);
-            setStartIdx(startIdx + 1);
-            setEndIdx(endIdx - 1);
+            setStartIdx(startIdx + leftStep);
+            setEndIdx(endIdx - rightStep);
         }
     };
 
     const zoomOut = () => {
-        if (startIdx !== INIT_START_IDX && endIdx !== INIT_END_IDX) {
-            setZoomCounts(prev => prev - 1);
-            setStartIdx(startIdx - 1);
-            setEndIdx(endIdx + 1);
-        }
+        const leftCounts = fixedIdx - startIdx;
+        const rightCounts = endIdx - fixedIdx;
+        const [leftStep, rightStep] =
+            leftCounts < rightCounts
+                ? [1, Math.floor(rightCounts / leftCounts)]
+                : [Math.floor(leftCounts / rightCounts), 1];
+
+        setStartIdx(prev =>
+            Math.max(prev - (leftCounts === rightCounts ? 2 : leftStep), INIT_START_IDX)
+        );
+
+        setEndIdx(prev =>
+            Math.min(prev + (leftCounts === rightCounts ? 2 : rightStep), INIT_END_IDX)
+        );
+
+        setZoomCounts(prev => prev - 1);
     };
 
     const resetZoom = () => {
@@ -150,19 +168,13 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         return (
                             <ReferenceArea
                                 onMouseMove={e => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
                                     setFixedIdx(idx);
                                     drawBox(e);
                                 }}
                                 onMouseDown={e => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
                                     startDrawBox(e, idx);
                                 }}
-                                onMouseUp={e => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
+                                onMouseUp={() => {
                                     endDrawBox(idx);
                                 }}
                                 key={time}
