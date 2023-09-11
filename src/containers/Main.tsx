@@ -1,6 +1,6 @@
 import {getSeoulInfo} from '../api/seoulInfo';
-import Chart from '../components/Chart';
-import ChartFilter from '../components/ChartFilter';
+import Chart from '../components/Chart/Chart';
+import ChartFilter from '../components/Chart/ChartFilter';
 import useChart from '../hooks/useChart';
 import useChartFilter from '../hooks/useChartFilter';
 const Main = () => {
