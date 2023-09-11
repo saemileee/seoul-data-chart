@@ -27,6 +27,8 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const [startIdx, setStartIdx] = useState(0);
     const [endIdx, setEndIdx] = useState(99);
     const [zoomCounts, setZoomCounts] = useState(0);
+    const [fixedIdx, setFixedIdx] = useState(0);
+    const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
     const debounce = useDebounce();
 
     const zoomIn = () => {
@@ -43,6 +45,20 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
             setStartIdx(startIdx - 1);
             setEndIdx(endIdx + 1);
         }
+    };
+
+    const dragNDropZoomIn = (idx: number) => {
+        if (onMouseDownIdx > idx) {
+            setStartIdx(idx);
+            setEndIdx(onMouseDownIdx);
+        } else if (onMouseDownIdx < idx) {
+            setStartIdx(onMouseDownIdx);
+            setEndIdx(idx);
+        } else {
+            setStartIdx(idx);
+            setEndIdx(idx);
+        }
+        setZoomCounts(prev => prev + 1);
     };
 
     const handleChangeBrush = (startIndex: number, endIndex: number) => {
@@ -96,10 +112,17 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                     yAxisId='left'
                     dot={<SelectedDot selectedKey={selectedKey} />}
                 />
-                {data.map(data => {
+                {data.map((data, idx) => {
                     const {time, id} = data;
                     return (
                         <ReferenceArea
+                            onMouseMove={() => {
+                                setFixedIdx(idx);
+                            }}
+                            onMouseDown={() => {
+                                setOnMouseDownIdx(idx);
+                            }}
+                            onMouseUp={() => dragNDropZoomIn(idx)}
                             key={time}
                             yAxisId='right'
                             x1={time}
