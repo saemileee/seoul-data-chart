@@ -15,6 +15,7 @@ import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
 import {Dispatch, SetStateAction, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
+import useDebounce from '../../hooks/useDebounce';
 
 interface ChartProps {
     data: ChartItem[];
@@ -25,9 +26,12 @@ interface ChartProps {
 const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const [startIdx, setStartIdx] = useState(0);
     const [endIdx, setEndIdx] = useState(99);
+    const [zoomCounts, setZoomCounts] = useState(0);
+    const debounce = useDebounce();
 
     const zoomIn = () => {
         if (startIdx + 1 !== endIdx && startIdx !== endIdx) {
+            setZoomCounts(prev => prev + 1);
             setStartIdx(startIdx + 1);
             setEndIdx(endIdx - 1);
         }
@@ -35,9 +39,17 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
 
     const zoomOut = () => {
         if (startIdx !== 0 && endIdx !== 99) {
+            setZoomCounts(prev => prev - 1);
             setStartIdx(startIdx - 1);
             setEndIdx(endIdx + 1);
         }
+    };
+
+    const handleChangeBrush = (startIndex: number, endIndex: number) => {
+        debounce(() => {
+            setStartIdx(startIndex!);
+            setEndIdx(endIndex!);
+        }, 300);
     };
 
     return (
@@ -50,13 +62,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                 }
             }}
         >
-            <ComposedChart
-                key={startIdx - endIdx}
-                width={1000}
-                height={400}
-                data={data}
-                onClick={console.info}
-            >
+            <ComposedChart key={zoomCounts} width={1000} height={400} data={data}>
                 <XAxis dataKey='time' height={40}>
                     <Label value='2023년' position='insideBottom' />
                 </XAxis>
@@ -114,6 +120,9 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                     fill='#ffffff'
                     startIndex={startIdx}
                     endIndex={endIdx}
+                    onChange={e => {
+                        handleChangeBrush(e.startIndex!, e.endIndex!);
+                    }}
                 >
                     <ComposedChart width={1000} height={400} data={data} onClick={console.info}>
                         <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
