@@ -1,5 +1,6 @@
-import useChartFilter from '../hooks/controllers/useChartFilter';
-import useSeoulData from '../hooks/controllers/useSeoulChart';
+import {getSeoulInfo} from '../api/seoulInfo';
+import useChart from '../hooks/useChart';
+import useChartFilter from '../hooks/useChartFilter';
 import {
     ComposedChart,
     Area,
@@ -16,9 +17,7 @@ import {
 } from 'recharts';
 
 const Main = () => {
-    const {state: chartState} = useSeoulData();
-    const {data: chartData} = chartState;
-
+    const {data: chartData} = useChart(getSeoulInfo);
     const {selectedKey, filterOptions, setSelectedKey} = useChartFilter('id', chartData);
 
     return (

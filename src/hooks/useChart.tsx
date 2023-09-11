@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import useFetch from './useFetch';
-import {ChartItem, ResponseData} from '../types/seoulInfo';
+import {ChartItem, ResponseData} from '../types/chartInfo';
 
 const useChart = (cb: () => Promise<ResponseData>) => {
     const {state: fetchState} = useFetch(cb);
