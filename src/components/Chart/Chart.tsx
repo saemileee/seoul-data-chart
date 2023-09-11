@@ -62,9 +62,11 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     };
 
     const resetZoom = () => {
-        setStartIdx(0);
-        setEndIdx(99);
-        setZoomCounts(prev => prev + 1);
+        if (startIdx !== 0 || endIdx !== 99) {
+            setStartIdx(0);
+            setEndIdx(99);
+            setZoomCounts(prev => prev + 1);
+        }
     };
 
     const handleChangeBrush = (startIndex: number, endIndex: number) => {
