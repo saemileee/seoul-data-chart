@@ -6,8 +6,8 @@ const useDragNDropZoom = (containerRef: any) => {
     const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
     const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
     const [dragBoxData, setDragBoxData] = useState<{
-        left: number | string;
-        right: number | string;
+        left: number | 'unset';
+        right: number | 'unset';
         top: number;
         width: number;
         height: number;

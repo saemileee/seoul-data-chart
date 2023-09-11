@@ -18,6 +18,7 @@ import CustomTooltip from './Custom/Tooltip';
 import useDebounce from '../../hooks/useDebounce';
 import useDragNDropZoom from '../../hooks/useDragNDropZoom';
 import styled from 'styled-components';
+import DragZoomInBox from './Custom/DragZoomInBox';
 
 interface ChartProps {
     data: ChartItem[];
@@ -92,22 +93,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                 position: 'initial',
             }}
         >
-            {dragBoxData && (
-                <div
-                    style={{
-                        zIndex: 999,
-                        position: 'absolute',
-                        border: '1px solid black',
-                        left: `${dragBoxData.left === 'unset' ? 'unset' : `${dragBoxData.left}px`}`,
-                        right: `${
-                            dragBoxData.right === 'unset' ? 'unset' : `${dragBoxData.right}px`
-                        }`,
-                        top: `${dragBoxData.top}px`,
-                        width: `${dragBoxData.width}px`,
-                        height: `${dragBoxData.height}px`,
-                    }}
-                />
-            )}
+            {dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
             <StyledToggleDragZoomInMode
                 className={`${isDragZoomInMode && 'selected'}`}
                 onClick={() => toggleDragZoomInMode()}
