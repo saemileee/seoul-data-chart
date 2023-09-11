@@ -12,10 +12,12 @@ import {
     Label,
 } from 'recharts';
 import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
-import {Dispatch, SetStateAction, useRef, useState} from 'react';
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
 import useDebounce from '../../hooks/useDebounce';
+import useDragNDropZoom from '../../hooks/useDragNDropZoom';
+import styled from 'styled-components';
 
 interface ChartProps {
     data: ChartItem[];
@@ -31,15 +33,24 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const [endIdx, setEndIdx] = useState(INIT_END_IDX);
     const [zoomCounts, setZoomCounts] = useState(0);
     const [fixedIdx, setFixedIdx] = useState(0);
-    const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
-    const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
-    const [dragBoxData, setDragBoxData] = useState<{
-        left: number | string;
-        right: number | string;
-        top: number;
-        width: number;
-        height: number;
-    } | null>(null);
+
+    const {
+        isDragZoomInMode,
+        zoomedIdx: dragNDropIdx,
+        toggleDragZoomInMode,
+        dragBoxData,
+        startDrawBox,
+        drawBox,
+        endDrawBox,
+    } = useDragNDropZoom(containerRef);
+
+    useEffect(() => {
+        if (dragNDropIdx?.length) {
+            setStartIdx(dragNDropIdx[0]);
+            setEndIdx(dragNDropIdx[1]);
+            setZoomCounts(prev => prev + 1);
+        }
+    }, [dragNDropIdx]);
 
     const debounce = useDebounce();
 
@@ -59,20 +70,6 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
         }
     };
 
-    const dragNDropZoomIn = (idx: number) => {
-        if (onMouseDownIdx > idx) {
-            setStartIdx(idx);
-            setEndIdx(onMouseDownIdx);
-        } else if (onMouseDownIdx < idx) {
-            setStartIdx(onMouseDownIdx);
-            setEndIdx(idx);
-        } else {
-            setStartIdx(idx);
-            setEndIdx(idx);
-        }
-        setZoomCounts(prev => prev + 1);
-    };
-
     const resetZoom = () => {
         if (startIdx !== INIT_START_IDX || endIdx !== INIT_END_IDX) {
             setStartIdx(INIT_START_IDX);
@@ -86,46 +83,6 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
             setStartIdx(startIndex!);
             setEndIdx(endIndex!);
         }, 300);
-    };
-
-    const startDrawBox = (e: any) => {
-        const offsetTop = containerRef.current!.offsetTop;
-        setDragBoxData({
-            left: 0,
-            right: 0,
-            top: offsetTop,
-            width: 0,
-            height: 0,
-        });
-    };
-
-    const drawBox = (e: any) => {
-        const currentClientX = e.clientX;
-        const clientWidth = containerRef.current!.clientWidth;
-        const isMovingToRight = onMouseDownClientX - currentClientX < 0;
-
-        if (!dragBoxData) return;
-        if (isMovingToRight) {
-            setDragBoxData({
-                ...dragBoxData,
-                left: onMouseDownClientX,
-                right: 'unset',
-                width: currentClientX - onMouseDownClientX - 4,
-                height: 272,
-            });
-        } else {
-            setDragBoxData({
-                ...dragBoxData,
-                right: clientWidth - onMouseDownClientX,
-                left: 'unset',
-                width: onMouseDownClientX - currentClientX - 4,
-                height: 271,
-            });
-        }
-    };
-
-    const endDrawBox = () => {
-        setDragBoxData(null);
     };
 
     return (
@@ -151,7 +108,12 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                     }}
                 />
             )}
-
+            <StyledToggleDragZoomInMode
+                className={`${isDragZoomInMode && 'selected'}`}
+                onClick={() => toggleDragZoomInMode()}
+            >
+                Zoom Mode
+            </StyledToggleDragZoomInMode>
             <button onClick={() => resetZoom()}>Reset Zoom</button>
             <div
                 onWheel={e => {
@@ -210,15 +172,12 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                                 onMouseDown={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    setOnMouseDownIdx(idx);
-                                    startDrawBox(e);
-                                    setOnMouseDownClientX(e.clientX);
+                                    startDrawBox(e, idx);
                                 }}
                                 onMouseUp={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    dragNDropZoomIn(idx);
-                                    endDrawBox();
+                                    endDrawBox(idx);
                                 }}
                                 key={time}
                                 yAxisId='right'
@@ -272,3 +231,17 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
 };
 
 export default Chart;
+
+const StyledToggleDragZoomInMode = styled.button`
+    padding: 4px 14px 4px 14px;
+    border: 1px solid #dddd;
+    border-radius: 12px;
+    color: #717171;
+    background-color: #efefef;
+    cursor: pointer;
+    &.selected {
+        border-color: #efefef;
+        color: #1a6da1;
+        background-color: #d1edff;
+    }
+`;
