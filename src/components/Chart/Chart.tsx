@@ -12,7 +12,7 @@ import {
     Label,
 } from 'recharts';
 import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
-import {Dispatch, SetStateAction, useState} from 'react';
+import {Dispatch, SetStateAction, useRef, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
 import useDebounce from '../../hooks/useDebounce';
@@ -24,15 +24,18 @@ interface ChartProps {
 }
 
 const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
+    const containerRef = useRef<HTMLDivElement>(null);
     const INIT_START_IDX = 0;
     const INIT_END_IDX = data.length - 1;
     const [startIdx, setStartIdx] = useState(INIT_START_IDX);
     const [endIdx, setEndIdx] = useState(INIT_END_IDX);
     const [zoomCounts, setZoomCounts] = useState(0);
     const [fixedIdx, setFixedIdx] = useState(0);
+    const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
     const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
     const [dragBoxData, setDragBoxData] = useState<{
-        left: number;
+        left: number | string;
+        right: number | string;
         top: number;
         width: number;
         height: number;
@@ -86,23 +89,39 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     };
 
     const startDrawBox = (e: any) => {
-        console.info(e);
+        const offsetTop = containerRef.current!.offsetTop;
         setDragBoxData({
-            left: e.clientX,
-            top: e.clientY,
+            left: 0,
+            right: 0,
+            top: offsetTop,
             width: 0,
             height: 0,
         });
     };
 
     const drawBox = (e: any) => {
-        console.info(e);
+        const currentClientX = e.clientX;
+        const clientWidth = containerRef.current!.clientWidth;
+        const isMovingToRight = onMouseDownClientX - currentClientX < 0;
+
         if (!dragBoxData) return;
-        setDragBoxData({
-            ...dragBoxData,
-            width: Math.abs(e.clientX - dragBoxData.left),
-            height: Math.abs(e.clientY - dragBoxData.top),
-        });
+        if (isMovingToRight) {
+            setDragBoxData({
+                ...dragBoxData,
+                left: onMouseDownClientX,
+                right: 'unset',
+                width: currentClientX - onMouseDownClientX - 4,
+                height: 272,
+            });
+        } else {
+            setDragBoxData({
+                ...dragBoxData,
+                right: clientWidth - onMouseDownClientX,
+                left: 'unset',
+                width: onMouseDownClientX - currentClientX - 4,
+                height: 271,
+            });
+        }
     };
 
     const endDrawBox = () => {
@@ -113,7 +132,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
         <div
             style={{
                 width: '100vw',
-                position: 'relative',
+                position: 'initial',
             }}
         >
             {dragBoxData && (
@@ -122,7 +141,10 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         zIndex: 999,
                         position: 'absolute',
                         border: '1px solid black',
-                        left: `${dragBoxData.left}px`,
+                        left: `${dragBoxData.left === 'unset' ? 'unset' : `${dragBoxData.left}px`}`,
+                        right: `${
+                            dragBoxData.right === 'unset' ? 'unset' : `${dragBoxData.right}px`
+                        }`,
                         top: `${dragBoxData.top}px`,
                         width: `${dragBoxData.width}px`,
                         height: `${dragBoxData.height}px`,
@@ -130,6 +152,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                 />
             )}
 
+            <button onClick={() => resetZoom()}>Reset Zoom</button>
             <div
                 onWheel={e => {
                     if (e.deltaY < 0) {
@@ -138,8 +161,8 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         zoomOut();
                     }
                 }}
+                ref={containerRef}
             >
-                <button onClick={() => resetZoom()}>Reset Zoom</button>
                 <ComposedChart key={zoomCounts} width={1000} height={400} data={data}>
                     <XAxis dataKey='time' height={40}>
                         <Label value='2023년' position='insideBottom' />
@@ -179,14 +202,21 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         return (
                             <ReferenceArea
                                 onMouseMove={e => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     setFixedIdx(idx);
                                     drawBox(e);
                                 }}
                                 onMouseDown={e => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     setOnMouseDownIdx(idx);
                                     startDrawBox(e);
+                                    setOnMouseDownClientX(e.clientX);
                                 }}
-                                onMouseUp={() => {
+                                onMouseUp={e => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     dragNDropZoomIn(idx);
                                     endDrawBox();
                                 }}
@@ -214,7 +244,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                             handleChangeBrush(e.startIndex!, e.endIndex!);
                         }}
                     >
-                        <ComposedChart width={1000} height={400} data={data} onClick={console.info}>
+                        <ComposedChart width={1000} height={400} data={data}>
                             <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
                                 {data.map((entry, index) => (
                                     <Cell
