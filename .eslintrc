@@ -3,12 +3,7 @@
         "browser": true,
         "node": true
     },
-    "extends": [
-        "prettier",
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
+    "extends": ["prettier", "eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "rules": {
         "no-var": "error",
         "no-multiple-empty-lines": "error",

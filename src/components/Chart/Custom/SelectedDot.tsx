@@ -1,5 +1,4 @@
 import {DotProps} from 'recharts';
-import React from 'react';
 
 interface CustomDotProps extends DotProps {
     selectedFilters: {[key: string]: boolean; [key: number]: boolean};

@@ -2,7 +2,6 @@ import {ChartSelectedKey} from '../../types/chartInfo';
 import styled from 'styled-components';
 import {RxReset} from 'react-icons/rx';
 import useTheme from '../../hooks/useTheme';
-import React from 'react';
 
 interface ChartFilterProps {
     // eslint-disable-next-line no-unused-vars
