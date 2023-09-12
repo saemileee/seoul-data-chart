@@ -14,8 +14,8 @@ import {
     ResponsiveContainer,
     CartesianGrid,
 } from 'recharts';
-import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
-import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
+import {ChartItem} from '../../types/chartInfo';
+import {useEffect, useRef, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
 import useDebounce from '../../hooks/useDebounce';
@@ -30,8 +30,6 @@ import useTheme from '../../hooks/useTheme';
 
 interface ChartProps {
     data: ChartItem[];
-    selectedKey?: ChartSelectedKey;
-    setSelectedKey?: Dispatch<SetStateAction<ChartSelectedKey>>;
 }
 
 const INIT_START_IDX = 0;
@@ -47,7 +45,7 @@ const Chart = ({data}: ChartProps) => {
     const [zoomCounts, setZoomCounts] = useState(0);
 
     const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
-    const {selectedKey, filterOptions, setSelectedKey} = useChartFilter('id', data);
+    const {selectedKey, filterOptions, selectFilter} = useChartFilter('id', data);
 
     const {
         zoomedIdx: dragNDropIdx,
@@ -98,7 +96,7 @@ const Chart = ({data}: ChartProps) => {
             <StyledButtonContainer>
                 <ChartFilter
                     selectedKey={selectedKey}
-                    setSelectedKey={setSelectedKey}
+                    selectFilter={selectFilter}
                     filterOptions={filterOptions}
                 />
                 <StyledZoomButtonContainer>
@@ -219,7 +217,7 @@ const Chart = ({data}: ChartProps) => {
                                     fill={themeObject.referenceAreaFill}
                                     opacity={`${id === selectedKey ? 0.3 : 0}`}
                                     onClick={() => {
-                                        setSelectedKey(id);
+                                        selectFilter(id);
                                     }}
                                 />
                             );
