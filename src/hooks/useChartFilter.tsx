@@ -17,27 +17,72 @@ const useChartFilter = (filterKey: keyof ChartItem, initData: ChartItem[]) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(initFilters);
 
-    // useEffect(() => {
-    //     const key = searchParams.get('filter');
-    //     if (key && filterOptions.includes(key)) {
-    //         setSelectedKey(key);
-    //     } else {
-    //         setSelectedKey('All');
-    //         searchParams.set('filter', 'All');
-    //         setSearchParams(searchParams);
-    //     }
-    // }, []);
+    useEffect(() => {
+        initParams();
+    }, []);
+
+    const getFilteredKeys = (selectedFilters: SelectedFilters) => {
+        return Object.keys(selectedFilters).filter(key => selectedFilters[key] === true);
+    };
 
     const toggleFilter = (key: ChartSelectedKey) => {
         if (key in selectedFilters) {
-            setSelectedFilters(prev => ({...prev, [key]: !prev[key]}));
-            // searchParams.set('filter', key!.toString());
-            setSearchParams(searchParams);
+            const newValue = !selectedFilters[key];
+            setSelectedFilters(prev => ({...prev, [key]: newValue}));
+
+            if (newValue) {
+                addParams(key + '');
+            } else {
+                removeParams(key + '');
+            }
+        }
+    };
+
+    const initParams = () => {
+        const params = searchParams.get('filter');
+        if (params) {
+            const newSelectedFilters: SelectedFilters = initFilters;
+            const newParamsArray = params.split(' ').filter(filter => {
+                if (filter in initFilters) {
+                    newSelectedFilters[filter] = true;
+                    return true;
+                }
+            });
+            if (newParamsArray.length) {
+                const newParams = newParamsArray.join(' ');
+                setSearchParams({filter: newParams});
+            } else {
+                resetFilter();
+            }
+            setSelectedFilters(newSelectedFilters);
+        } else {
+            console.info('reset param');
+            resetFilter();
+        }
+    };
+
+    const addParams = (key: string) => {
+        const keysWithTrueValue = getFilteredKeys(selectedFilters);
+        const params = [...keysWithTrueValue, key].join(' ');
+        setSearchParams({filter: params});
+    };
+
+    const removeParams = (key: string) => {
+        const params = searchParams
+            .get('filter')!
+            .split(' ')
+            .filter(string => string !== key)
+            .join(' ');
+        if (params.length) {
+            setSearchParams({filter: params});
+        } else {
+            setSearchParams({});
         }
     };
 
     const resetFilter = () => {
         setSelectedFilters(initFilters);
+        setSearchParams({});
     };
 
     return {selectedFilters, filterOptions, toggleFilter, resetFilter};
