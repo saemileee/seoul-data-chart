@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 
-const DEFAULT_BOX_HEIGHT = 277;
-
-const useDragNDropZoom = (containerRef: React.RefObject<HTMLDivElement>) => {
+const useDragNDropZoom = (top: number = 0, height: number = 0, clientWidth: number = 0) => {
     const [zoomedIdx, setZoomedIdx] = useState<null | number[]>(null);
     const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
     const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
@@ -15,11 +13,10 @@ const useDragNDropZoom = (containerRef: React.RefObject<HTMLDivElement>) => {
     } | null>(null);
 
     const startDrawBox = (e: React.MouseEvent, idx: number) => {
-        const offsetTop = containerRef.current!.offsetTop;
         setDragBoxData({
             left: 0,
             right: 0,
-            top: offsetTop,
+            top: top,
             width: 0,
             height: 0,
         });
@@ -29,7 +26,6 @@ const useDragNDropZoom = (containerRef: React.RefObject<HTMLDivElement>) => {
 
     const drawBox = (e: React.MouseEvent) => {
         const currentClientX = e.clientX;
-        const clientWidth = containerRef.current!.clientWidth;
         const isMovingToRight = onMouseDownClientX - currentClientX < 0;
 
         if (!dragBoxData) return;
@@ -39,15 +35,15 @@ const useDragNDropZoom = (containerRef: React.RefObject<HTMLDivElement>) => {
                 left: onMouseDownClientX,
                 right: 'unset',
                 width: currentClientX - onMouseDownClientX - 4,
-                height: DEFAULT_BOX_HEIGHT,
+                height,
             });
         } else {
             setDragBoxData({
                 ...dragBoxData,
-                right: clientWidth - onMouseDownClientX,
                 left: 'unset',
-                width: onMouseDownClientX - currentClientX - 4,
-                height: DEFAULT_BOX_HEIGHT,
+                right: clientWidth - onMouseDownClientX + 92,
+                width: onMouseDownClientX - currentClientX + 2,
+                height,
             });
         }
     };
