@@ -1,6 +1,5 @@
 import {TooltipProps} from 'recharts';
 import styled from 'styled-components';
-import React from 'react';
 
 const CustomTooltip = ({active, payload}: TooltipProps<number, string>): JSX.Element | null => {
     if (active && payload && payload.length) {

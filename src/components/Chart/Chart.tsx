@@ -15,7 +15,7 @@ import {
     CartesianGrid,
 } from 'recharts';
 import {ChartData} from '../../types/chartInfo';
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
 import useDebounce from '../../hooks/useDebounce';
