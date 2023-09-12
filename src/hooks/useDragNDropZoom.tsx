@@ -1,5 +1,7 @@
 import {useState} from 'react';
 
+const DEFAULT_BOX_HEIGHT = 277;
+
 const useDragNDropZoom = (containerRef: any) => {
     const [zoomedIdx, setZoomedIdx] = useState<null | number[]>(null);
     const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
@@ -37,7 +39,7 @@ const useDragNDropZoom = (containerRef: any) => {
                 left: onMouseDownClientX,
                 right: 'unset',
                 width: currentClientX - onMouseDownClientX - 4,
-                height: 272,
+                height: DEFAULT_BOX_HEIGHT,
             });
         } else {
             setDragBoxData({
@@ -45,7 +47,7 @@ const useDragNDropZoom = (containerRef: any) => {
                 right: clientWidth - onMouseDownClientX,
                 left: 'unset',
                 width: onMouseDownClientX - currentClientX - 4,
-                height: 271,
+                height: DEFAULT_BOX_HEIGHT,
             });
         }
     };
