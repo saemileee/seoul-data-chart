@@ -1,6 +1,7 @@
 import {ChartSelectedKey} from '../../types/chartInfo';
 import styled from 'styled-components';
-import {GrPowerReset} from 'react-icons/gr';
+import {RxReset} from 'react-icons/rx';
+import useTheme from '../../hooks/useTheme';
 import React from 'react';
 
 interface ChartFilterProps {
@@ -20,10 +21,12 @@ const ChartFilter = ({
     filterOptions,
     resetFilter,
 }: ChartFilterProps) => {
+    const {themeObject} = useTheme();
+
     return (
         <StyledChartContainer>
-            <StyledFilterButton onClick={() => resetFilter()}>
-                <GrPowerReset />
+            <StyledFilterButton className='reset' onClick={() => resetFilter()}>
+                <RxReset color={themeObject.textColorGrey} />
             </StyledFilterButton>
             {filterOptions.map(option => (
                 <StyledFilterButton
