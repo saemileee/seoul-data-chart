@@ -19,6 +19,7 @@ import useDebounce from '../../hooks/useDebounce';
 import useDragNDropZoom from '../../hooks/useDragNDropZoom';
 import styled from 'styled-components';
 import DragZoomInBox from './Custom/DragZoomInBox';
+import useWheelZoom from '../../hooks/useWheelZoom';
 
 interface ChartProps {
     data: ChartItem[];
@@ -26,14 +27,18 @@ interface ChartProps {
     setSelectedKey: Dispatch<SetStateAction<ChartSelectedKey>>;
 }
 
+const INIT_START_IDX = 0;
+
 const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const INIT_START_IDX = 0;
+
     const INIT_END_IDX = data.length - 1;
+
     const [startIdx, setStartIdx] = useState(INIT_START_IDX);
     const [endIdx, setEndIdx] = useState(INIT_END_IDX);
     const [zoomCounts, setZoomCounts] = useState(0);
-    const [fixedIdx, setFixedIdx] = useState(0);
+
+    const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
 
     const {
         isDragZoomInMode,
@@ -46,6 +51,14 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     } = useDragNDropZoom(containerRef);
 
     useEffect(() => {
+        if (wheelZoomIdx?.length) {
+            setStartIdx(wheelZoomIdx[0]);
+            setEndIdx(wheelZoomIdx[1]);
+            setZoomCounts(prev => prev + 1);
+        }
+    }, [wheelZoomIdx]);
+
+    useEffect(() => {
         if (dragNDropIdx?.length) {
             setStartIdx(dragNDropIdx[0]);
             setEndIdx(dragNDropIdx[1]);
@@ -54,40 +67,6 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     }, [dragNDropIdx]);
 
     const debounce = useDebounce();
-
-    const zoomIn = () => {
-        const leftCounts = fixedIdx - startIdx;
-        const rightCounts = endIdx - fixedIdx;
-        const [leftStep, rightStep] =
-            leftCounts < rightCounts
-                ? [1, Math.floor(rightCounts / leftCounts)]
-                : [Math.floor(leftCounts / rightCounts), 1];
-
-        if (startIdx + 1 !== endIdx && startIdx !== endIdx) {
-            setZoomCounts(prev => prev + 1);
-            setStartIdx(startIdx + leftStep);
-            setEndIdx(endIdx - rightStep);
-        }
-    };
-
-    const zoomOut = () => {
-        const leftCounts = fixedIdx - startIdx;
-        const rightCounts = endIdx - fixedIdx;
-        const [leftStep, rightStep] =
-            leftCounts < rightCounts
-                ? [1, Math.floor(rightCounts / leftCounts)]
-                : [Math.floor(leftCounts / rightCounts), 1];
-
-        setStartIdx(prev =>
-            Math.max(prev - (leftCounts === rightCounts ? 2 : leftStep), INIT_START_IDX)
-        );
-
-        setEndIdx(prev =>
-            Math.min(prev + (leftCounts === rightCounts ? 2 : rightStep), INIT_END_IDX)
-        );
-
-        setZoomCounts(prev => prev - 1);
-    };
 
     const resetZoom = () => {
         if (startIdx !== INIT_START_IDX || endIdx !== INIT_END_IDX) {
@@ -119,16 +98,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                 Zoom Mode
             </StyledToggleDragZoomInMode>
             <button onClick={() => resetZoom()}>Reset Zoom</button>
-            <div
-                onWheel={e => {
-                    if (e.deltaY < 0) {
-                        zoomIn();
-                    } else if (e.deltaY > 0) {
-                        zoomOut();
-                    }
-                }}
-                ref={containerRef}
-            >
+            <div ref={containerRef}>
                 <ComposedChart key={zoomCounts} width={1000} height={400} data={data}>
                     <XAxis dataKey='time' height={40}>
                         <Label value='2023년' position='insideBottom' />
@@ -167,8 +137,8 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         const {time, id} = data;
                         return (
                             <ReferenceArea
+                                onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
                                 onMouseMove={e => {
-                                    setFixedIdx(idx);
                                     drawBox(e);
                                 }}
                                 onMouseDown={e => {
