@@ -12,6 +12,7 @@ import {
     ReferenceArea,
     Label,
     ResponsiveContainer,
+    CartesianGrid,
 } from 'recharts';
 import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
@@ -132,6 +133,7 @@ const Chart = ({data}: ChartProps) => {
                         />
 
                         <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
+                        <CartesianGrid strokeDasharray='3 3' />
 
                         <defs>
                             <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
