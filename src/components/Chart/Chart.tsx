@@ -1,3 +1,4 @@
+import {MdZoomOutMap} from 'react-icons/md';
 import {
     ComposedChart,
     Area,
@@ -21,6 +22,7 @@ import useDragNDropZoom from '../../hooks/useDragNDropZoom';
 import styled from 'styled-components';
 import DragZoomInBox from './Custom/DragZoomInBox';
 import useWheelZoom from '../../hooks/useWheelZoom';
+import useToggle from '../../hooks/useToggle';
 
 interface ChartProps {
     data: ChartItem[];
@@ -42,14 +44,14 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
 
     const {
-        isDragZoomInMode,
         zoomedIdx: dragNDropIdx,
-        toggleDragZoomInMode,
         dragBoxData,
         startDrawBox,
         drawBox,
         endDrawBox,
     } = useDragNDropZoom(containerRef);
+
+    const {isActive: isZoomModeActive, Toggle} = useToggle();
 
     useEffect(() => {
         if (wheelZoomIdx?.length) {
@@ -88,13 +90,11 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
         <StyledChartContainer>
             {dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
             <StyledZoomButtonContainer>
-                <StyledToggleDragZoomInMode
-                    className={`${isDragZoomInMode && 'selected'}`}
-                    onClick={() => toggleDragZoomInMode()}
-                >
-                    Zoom Mode
-                </StyledToggleDragZoomInMode>
-                <button onClick={() => resetZoom()}>Reset Zoom</button>
+                <Toggle innerLabel='Zoom' />
+                <StyledZoomButton onClick={() => resetZoom()}>
+                    <MdZoomOutMap size={17} />
+                    Full chart
+                </StyledZoomButton>
             </StyledZoomButtonContainer>
             <div ref={containerRef}>
                 <ResponsiveContainer width='100%' height={400}>
@@ -151,13 +151,13 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                                 <ReferenceArea
                                     onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
                                     onMouseMove={e => {
-                                        drawBox(e);
+                                        isZoomModeActive && drawBox(e);
                                     }}
                                     onMouseDown={e => {
-                                        startDrawBox(e, idx);
+                                        isZoomModeActive && startDrawBox(e, idx);
                                     }}
                                     onMouseUp={() => {
-                                        endDrawBox(idx);
+                                        isZoomModeActive && endDrawBox(idx);
                                     }}
                                     key={time}
                                     yAxisId='right'
@@ -223,7 +223,7 @@ export default Chart;
 const StyledChartContainer = styled.div`
     min-width: 320px;
     position: initial;
-    padding: 20px 0 20px 0;
+    padding: 25px 0 20px 0;
     margin-top: 32px;
     box-sizing: border-box;
     border-radius: 20px;
@@ -239,16 +239,24 @@ const StyledZoomButtonContainer = styled.div`
     gap: 16px;
 `;
 
-const StyledToggleDragZoomInMode = styled.button`
-    padding: 4px 14px 4px 14px;
+const StyledZoomButton = styled.button`
+    display: flex;
+    box-sizing: border-box;
+    padding: 6px 14px 6px 14px;
     border: 1px solid #dddd;
-    border-radius: 12px;
+    border-radius: 8px;
     color: #717171;
     background-color: #efefef;
     cursor: pointer;
+    box-shadow: 0 0 10px #efefef;
+    font-size: 16px;
+    svg {
+        margin-right: 6px;
+    }
     &.selected {
         border-color: #efefef;
         color: #1a6da1;
         background-color: #d1edff;
+        font-weight: 500;
     }
 `;
