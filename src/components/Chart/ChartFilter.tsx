@@ -1,22 +1,35 @@
 import {ChartSelectedKey} from '../../types/chartInfo';
 import styled from 'styled-components';
+import {GrPowerReset} from 'react-icons/gr';
 import React from 'react';
 
 interface ChartFilterProps {
-    selectedKey: ChartSelectedKey;
     // eslint-disable-next-line no-unused-vars
-    selectFilter: (option: ChartSelectedKey) => void;
+    toggleFilter: (option: ChartSelectedKey) => void;
+    selectedFilters: {
+        [key: string]: boolean;
+        [key: number]: boolean;
+    };
     filterOptions: (string | number)[];
+    resetFilter: () => void;
 }
 
-const ChartFilter = ({selectedKey, selectFilter, filterOptions}: ChartFilterProps) => {
+const ChartFilter = ({
+    selectedFilters,
+    toggleFilter,
+    filterOptions,
+    resetFilter,
+}: ChartFilterProps) => {
     return (
         <StyledChartContainer>
+            <StyledFilterButton onClick={() => resetFilter()}>
+                <GrPowerReset />
+            </StyledFilterButton>
             {filterOptions.map(option => (
                 <StyledFilterButton
-                    className={`${selectedKey === option && 'selected'}`}
+                    className={`${selectedFilters[option] === true && 'selected'}`}
                     key={option}
-                    onClick={() => selectFilter(option)}
+                    onClick={() => toggleFilter(option)}
                 >
                     {option}
                 </StyledFilterButton>

@@ -47,7 +47,7 @@ const Chart = ({data}: ChartProps) => {
     const [zoomCounts, setZoomCounts] = useState(0);
 
     const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
-    const {selectedKey, filterOptions, selectFilter} = useChartFilter('id', data);
+    const {selectedFilters, filterOptions, toggleFilter, resetFilter} = useChartFilter('id', data);
 
     const {
         zoomedIdx: dragNDropIdx,
@@ -97,9 +97,10 @@ const Chart = ({data}: ChartProps) => {
             {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
             <StyledButtonContainer>
                 <ChartFilter
-                    selectedKey={selectedKey}
-                    selectFilter={selectFilter}
+                    selectedFilters={selectedFilters}
+                    toggleFilter={toggleFilter}
                     filterOptions={filterOptions}
+                    resetFilter={resetFilter}
                 />
                 <StyledZoomButtonContainer>
                     <Toggle innerLabel='Zoom' />
@@ -190,7 +191,7 @@ const Chart = ({data}: ChartProps) => {
                             </defs>
                             <Area
                                 isAnimationActive={false}
-                                key={selectedKey}
+                                // key={selectedFilters}
                                 dataKey='value_area'
                                 type='monotone'
                                 fill='url(#colorArea)'
@@ -198,7 +199,7 @@ const Chart = ({data}: ChartProps) => {
                                 yAxisId='left'
                                 dot={
                                     <SelectedDot
-                                        selectedKey={selectedKey}
+                                        selectedFilters={selectedFilters}
                                         strokeColor={themeObject.areaStroke}
                                     />
                                 }
@@ -222,9 +223,9 @@ const Chart = ({data}: ChartProps) => {
                                         x1={time}
                                         x2={time}
                                         fill={themeObject.referenceAreaFill}
-                                        opacity={`${id === selectedKey ? 0.3 : 0}`}
+                                        opacity={`${selectedFilters[id] ? 0.5 : 0}`}
                                         onClick={() => {
-                                            selectFilter(id);
+                                            toggleFilter(id);
                                         }}
                                     />
                                 );
@@ -255,7 +256,7 @@ const Chart = ({data}: ChartProps) => {
                                             <Cell
                                                 cursor='pointer'
                                                 fill={
-                                                    entry.id === selectedKey
+                                                    selectedFilters[entry.id]
                                                         ? themeObject.barSelectedColor
                                                         : themeObject.barStopColorStart
                                                 }
@@ -265,7 +266,7 @@ const Chart = ({data}: ChartProps) => {
                                     </Bar>
                                     <Area
                                         isAnimationActive={false}
-                                        key={selectedKey}
+                                        // key={selectedFilters}
                                         dataKey='value_area'
                                         type='monotone'
                                         fill={themeObject.areaStopColorStart}
@@ -273,7 +274,7 @@ const Chart = ({data}: ChartProps) => {
                                         yAxisId='left'
                                         dot={
                                             <SelectedDot
-                                                selectedKey={selectedKey}
+                                                selectedFilters={selectedFilters}
                                                 strokeColor={themeObject.areaStroke}
                                             />
                                         }

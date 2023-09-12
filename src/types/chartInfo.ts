@@ -15,4 +15,4 @@ export interface ChartItem {
     value_bar: number;
 }
 
-export type ChartSelectedKey = string | number | null;
+export type ChartSelectedKey = string | number;
