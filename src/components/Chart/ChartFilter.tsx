@@ -1,21 +1,20 @@
-import {Dispatch, SetStateAction} from 'react';
 import {ChartSelectedKey} from '../../types/chartInfo';
 import styled from 'styled-components';
 
 interface ChartFilterProps {
     selectedKey: ChartSelectedKey;
-    setSelectedKey: Dispatch<SetStateAction<ChartSelectedKey>>;
+    selectFilter: (key: ChartSelectedKey) => void;
     filterOptions: (string | number)[];
 }
 
-const ChartFilter = ({selectedKey, setSelectedKey, filterOptions}: ChartFilterProps) => {
+const ChartFilter = ({selectedKey, selectFilter, filterOptions}: ChartFilterProps) => {
     return (
         <StyledChartContainer>
             {filterOptions.map(option => (
                 <StyledFilterButton
                     className={`${selectedKey === option && 'selected'}`}
                     key={option}
-                    onClick={() => setSelectedKey(option)}
+                    onClick={() => selectFilter(option)}
                 >
                     {option}
                 </StyledFilterButton>
