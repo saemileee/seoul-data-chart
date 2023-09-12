@@ -1,5 +1,4 @@
 import axios from 'axios';
-import {BASE_URL} from '../constants/api';
 class AxiosInstance {
     baseUrl: string;
     constructor(baseUrl: string) {
@@ -12,6 +11,6 @@ class AxiosInstance {
     }
 }
 
-const httpClient = new AxiosInstance(BASE_URL || '');
+const httpClient = new AxiosInstance(import.meta.env.REACT_APP_BASE_URL || '');
 
 export const seoulAPI = httpClient.instance('/response');
