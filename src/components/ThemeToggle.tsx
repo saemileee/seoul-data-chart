@@ -25,7 +25,7 @@ const ToggleWrapper = styled.button<ToggleWrapperProps>`
     bottom: 4%;
     right: 3%;
 
-    background-color: ${props => props.theme.bgColor};
+    background-color: ${props => props.theme.buttonDefault};
     border: ${props => props.theme.borderColor};
     font-size: 20px;
 
@@ -35,5 +35,7 @@ const ToggleWrapper = styled.button<ToggleWrapperProps>`
     width: 96px;
     height: 48px;
     border-radius: 30px;
-    box-shadow: ${props => props.theme.boxShadow};
+    box-shadow: 0 0 8px 3px ${props => props.theme.boxShadow};
+
+    cursor: pointer;
 `;

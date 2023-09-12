@@ -26,7 +26,10 @@ const Main = () => {
 export default Main;
 
 const StyledContainer = styled.div`
+    box-sizing: border-box;
+    margin: 50px 40px 0 40px;
     h3 {
+        text-align: center;
         color: ${props => props.theme.textColorDefault};
     }
 `;
