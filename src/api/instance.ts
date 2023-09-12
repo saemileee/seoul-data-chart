@@ -11,6 +11,6 @@ class AxiosInstance {
     }
 }
 
-const httpClient = new AxiosInstance(import.meta.env.REACT_APP_BASE_URL || '');
+const httpClient = new AxiosInstance(import.meta.env.VITE_BASE_URL_BASE_URL);
 
 export const seoulAPI = httpClient.instance('/response');
