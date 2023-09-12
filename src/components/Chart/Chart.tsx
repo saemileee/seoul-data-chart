@@ -133,25 +133,23 @@ const Chart = ({data}: ChartProps) => {
 
                         <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
 
+                        <defs>
+                            <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
+                                <stop offset='50%' stopColor='#dddaff' stopOpacity={1} />
+                                <stop offset='100%' stopColor='#f7ecff' stopOpacity={0.3} />
+                            </linearGradient>
+                        </defs>
                         <Bar
                             isAnimationActive={false}
                             dataKey='value_bar'
-                            fill='#82ca9d'
+                            fill='url(#colorBar)'
                             barSize={20}
                             yAxisId='right'
-                        >
-                            {data.map((entry, index) => (
-                                <Cell
-                                    cursor='pointer'
-                                    fill={entry.id === selectedKey ? ' #01b07b' : '#a7e9c0'}
-                                    key={`cell-${index}`}
-                                />
-                            ))}
-                        </Bar>
+                        ></Bar>
                         <defs>
                             <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
-                                <stop offset='5%' stopColor='#ff6b39' stopOpacity={1} />
-                                <stop offset='95%' stopColor='#ff6b39' stopOpacity={0.3} />
+                                <stop offset='50%' stopColor='#a8d4f6' stopOpacity={1} />
+                                <stop offset='100%' stopColor='#ffffff' stopOpacity={0.3} />
                             </linearGradient>
                         </defs>
                         <Area
@@ -160,7 +158,7 @@ const Chart = ({data}: ChartProps) => {
                             dataKey='value_area'
                             type='monotone'
                             fill='url(#colorArea)'
-                            stroke='#ff6b39'
+                            stroke='#4d97cf'
                             yAxisId='left'
                             dot={<SelectedDot selectedKey={selectedKey} />}
                         />
@@ -182,8 +180,8 @@ const Chart = ({data}: ChartProps) => {
                                     yAxisId='right'
                                     x1={time}
                                     x2={time}
-                                    fill='#7ef5fb'
-                                    opacity={`${id === selectedKey ? 0.5 : 0}`}
+                                    fill='#00fbff'
+                                    opacity={`${id === selectedKey ? 0.3 : 0}`}
                                     onClick={() => {
                                         setSelectedKey(id);
                                     }}
@@ -207,14 +205,14 @@ const Chart = ({data}: ChartProps) => {
                                 <Bar
                                     isAnimationActive={false}
                                     dataKey='value_bar'
-                                    fill='#82ca9d'
+                                    fill='#dddaff'
                                     barSize={20}
                                     yAxisId='right'
                                 >
                                     {data.map((entry, index) => (
                                         <Cell
                                             cursor='pointer'
-                                            fill={entry.id === selectedKey ? ' #82ca9d' : '#abdcbe'}
+                                            fill={entry.id === selectedKey ? ' #bbb4ff' : '#dddaff'}
                                             key={`cell-${index}`}
                                         />
                                     ))}
@@ -224,8 +222,8 @@ const Chart = ({data}: ChartProps) => {
                                     key={selectedKey}
                                     dataKey='value_area'
                                     type='monotone'
-                                    fill='#ff885c94'
-                                    stroke='#ff875c'
+                                    fill='#a8d4f6'
+                                    stroke='#4d97cf'
                                     yAxisId='left'
                                     dot={<SelectedDot selectedKey={selectedKey} />}
                                 />
