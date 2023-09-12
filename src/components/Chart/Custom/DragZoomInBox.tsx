@@ -30,15 +30,17 @@ const DragZoomInBox = ({dragBoxData}: DragZoomInBoxProps) => {
 export default DragZoomInBox;
 
 const StyledDragZoomInBox = styled.div`
+    box-sizing: border-box;
     display: flex;
     justify-content: end;
     z-index: 999;
     position: absolute;
-    border: 1px solid #3dc1ed;
+    border: 1px solid #006eff;
     border-radius: 4px;
-    background-color: #85bff553;
+    background-color: #85bff57b;
     span {
+        margin: 4px 16px 0px 0px;
         font-weight: 600;
-        color: #222e46;
+        color: #0d2d6f;
     }
 `;
