@@ -35,7 +35,7 @@ const StyledToggleContainer = styled.div`
     align-items: center;
     gap: 8px;
     label {
-        color: #7d7d7ddd;
+        color: ${props => props.theme.textColorDefault};
     }
     .toggle {
         display: flex;
@@ -45,8 +45,8 @@ const StyledToggleContainer = styled.div`
         box-sizing: content-box;
         padding: 4px;
         height: 24px;
-        background-color: #eeeeee;
-        border: 1px solid #dddd;
+        background-color: ${props => props.theme.buttonDefault};
+        border: 1px solid ${props => props.theme.borderColor};
         border-radius: 30px;
         button {
             background-color: #ffff;
@@ -60,12 +60,12 @@ const StyledToggleContainer = styled.div`
             user-select: none;
             margin-right: 8px;
             font-size: 14px;
-            color: #7d7d7ddd;
+            color: ${props => props.theme.textColorGrey};
         }
         &.active {
             flex-direction: row-reverse;
             text-align: right;
-            background-color: #0278ff;
+            background-color: ${props => props.theme.primaryColor};
             span {
                 margin-right: 0px;
                 margin-left: 8px;

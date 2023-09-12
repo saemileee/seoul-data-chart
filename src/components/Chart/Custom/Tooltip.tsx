@@ -27,28 +27,29 @@ export default CustomTooltip;
 
 const StyledTooltipContainer = styled.div`
     padding: 6px 14px 6px 14px;
-    border: 1px solid #dddd;
+    border: 1px solid ${props => props.theme.borderColor};
     border-radius: 6px;
-    background-color: #ffffffc0;
+    background-color: ${props => props.theme.tooltipBg};
     p {
+        color: ${props => props.theme.textColorDefault};
         padding: 2px 0 4px 0;
         margin: 0;
         margin-bottom: 6px;
     }
     .id {
-        border-bottom: 1px solid #dddd;
+        border-bottom: 1px solid ${props => props.theme.borderColor};
     }
     label {
         font-weight: 500;
     }
     .valueArea {
         label {
-            color: #ff9100dd;
+            color: ${props => props.theme.areaStroke};
         }
     }
     .valueBar {
         label {
-            color: #1aa683dd;
+            color: ${props => props.theme.barSelectedColor};
         }
     }
     .id {

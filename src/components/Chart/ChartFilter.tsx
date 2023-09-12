@@ -35,13 +35,13 @@ const StyledChartContainer = styled.ul`
 const StyledFilterButton = styled.li`
     user-select: none;
     padding: 6px 14px 4px 14px;
-    border: 1px solid #bbbbbb;
+    border: 1px solid ${props => props.theme.borderColor};
     border-radius: 30px;
-    color: #7a7a7a;
+    color: ${props => props.theme.textColorGrey};
     cursor: pointer;
     &.selected {
-        color: white;
-        background-color: #217dff;
+        color: ${props => props.theme.textColorLight};
+        background-color: ${props => props.theme.primaryColor};
         border: unset;
     }
 `;

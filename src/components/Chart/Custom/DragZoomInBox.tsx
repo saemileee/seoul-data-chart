@@ -35,12 +35,12 @@ const StyledDragZoomInBox = styled.div`
     justify-content: end;
     z-index: 999;
     position: absolute;
-    border: 1px solid #006eff;
+    border: 1px solid ${props => props.theme.zoomInBoxBorder};
     border-radius: 4px;
-    background-color: #85bff57b;
+    background-color: ${props => props.theme.zoomInBoxBg};
     span {
         margin: 4px 16px 0px 0px;
         font-weight: 600;
-        color: #0d2d6f;
+        color: ${props => props.theme.zoomInLabel};
     }
 `;

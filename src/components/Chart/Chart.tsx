@@ -26,6 +26,7 @@ import useWheelZoom from '../../hooks/useWheelZoom';
 import useToggle from '../../hooks/useToggle';
 import ChartFilter from './ChartFilter';
 import useChartFilter from '../../hooks/useChartFilter';
+import useTheme from '../../hooks/useTheme';
 
 interface ChartProps {
     data: ChartItem[];
@@ -37,6 +38,7 @@ const INIT_START_IDX = 0;
 
 const Chart = ({data}: ChartProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const {themeObject} = useTheme();
 
     const INIT_END_IDX = data.length - 1;
 
@@ -115,17 +117,28 @@ const Chart = ({data}: ChartProps) => {
                         data={data}
                         margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
-                        <XAxis dataKey='time' height={40} tickMargin={12}>
+                        <XAxis
+                            dataKey='time'
+                            height={40}
+                            tickMargin={12}
+                            stroke={themeObject.axisStroke}
+                        >
                             <Label
                                 value='2023년 2월 1일'
                                 position='insideBottom'
                                 dy={15}
                                 fontSize={14}
                                 className='xAxisLabel'
+                                color={themeObject.textColorDefault}
                             />
                         </XAxis>
-                        <YAxis yAxisId='left' className='yAxis' />
-                        <YAxis yAxisId='right' orientation='right' className='yAxis' />
+                        <YAxis stroke={themeObject.axisStroke} yAxisId='left' className='yAxis' />
+                        <YAxis
+                            stroke={themeObject.axisStroke}
+                            yAxisId='right'
+                            orientation='right'
+                            className='yAxis'
+                        />
                         <Legend
                             wrapperStyle={{
                                 paddingTop: '20px',
@@ -133,12 +146,20 @@ const Chart = ({data}: ChartProps) => {
                         />
 
                         <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
-                        <CartesianGrid strokeDasharray='3 3' />
+                        <CartesianGrid strokeDasharray='3 3' stroke={themeObject.axisStroke} />
 
                         <defs>
                             <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
-                                <stop offset='50%' stopColor='#dddaff' stopOpacity={1} />
-                                <stop offset='100%' stopColor='#f7ecff' stopOpacity={0.3} />
+                                <stop
+                                    offset='50%'
+                                    stopColor={themeObject.barStopColorStart}
+                                    stopOpacity={1}
+                                />
+                                <stop
+                                    offset='100%'
+                                    stopColor={themeObject.barStopColorEnd}
+                                    stopOpacity={0.3}
+                                />
                             </linearGradient>
                         </defs>
                         <Bar
@@ -150,8 +171,16 @@ const Chart = ({data}: ChartProps) => {
                         ></Bar>
                         <defs>
                             <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
-                                <stop offset='50%' stopColor='#a8d4f6' stopOpacity={1} />
-                                <stop offset='100%' stopColor='#ffffff' stopOpacity={0.3} />
+                                <stop
+                                    offset='50%'
+                                    stopColor={themeObject.areaStopColorStart}
+                                    stopOpacity={1}
+                                />
+                                <stop
+                                    offset='100%'
+                                    stopColor={themeObject.areaStopColorEnd}
+                                    stopOpacity={0.3}
+                                />
                             </linearGradient>
                         </defs>
                         <Area
@@ -160,9 +189,14 @@ const Chart = ({data}: ChartProps) => {
                             dataKey='value_area'
                             type='monotone'
                             fill='url(#colorArea)'
-                            stroke='#4d97cf'
+                            stroke={themeObject.areaStroke}
                             yAxisId='left'
-                            dot={<SelectedDot selectedKey={selectedKey} />}
+                            dot={
+                                <SelectedDot
+                                    selectedKey={selectedKey}
+                                    strokeColor={themeObject.areaStroke}
+                                />
+                            }
                         />
                         {data.map((data, idx) => {
                             const {time, id} = data;
@@ -182,7 +216,7 @@ const Chart = ({data}: ChartProps) => {
                                     yAxisId='right'
                                     x1={time}
                                     x2={time}
-                                    fill='#00fbff'
+                                    fill={themeObject.referenceAreaFill}
                                     opacity={`${id === selectedKey ? 0.3 : 0}`}
                                     onClick={() => {
                                         setSelectedKey(id);
@@ -195,8 +229,9 @@ const Chart = ({data}: ChartProps) => {
                             className='brush'
                             dataKey='time'
                             travellerWidth={10}
+                            stroke={themeObject.borderColor}
                             height={40}
-                            fill='#ffffff'
+                            fill={themeObject.bgColor}
                             startIndex={startIdx}
                             endIndex={endIdx}
                             onChange={e => {
@@ -207,14 +242,18 @@ const Chart = ({data}: ChartProps) => {
                                 <Bar
                                     isAnimationActive={false}
                                     dataKey='value_bar'
-                                    fill='#dddaff'
+                                    fill={themeObject.barSelectedColor}
                                     barSize={20}
                                     yAxisId='right'
                                 >
                                     {data.map((entry, index) => (
                                         <Cell
                                             cursor='pointer'
-                                            fill={entry.id === selectedKey ? ' #bbb4ff' : '#dddaff'}
+                                            fill={
+                                                entry.id === selectedKey
+                                                    ? themeObject.barSelectedColor
+                                                    : themeObject.barStopColorStart
+                                            }
                                             key={`cell-${index}`}
                                         />
                                     ))}
@@ -224,10 +263,15 @@ const Chart = ({data}: ChartProps) => {
                                     key={selectedKey}
                                     dataKey='value_area'
                                     type='monotone'
-                                    fill='#a8d4f6'
-                                    stroke='#4d97cf'
+                                    fill={themeObject.areaStopColorStart}
+                                    stroke={themeObject.areaStroke}
                                     yAxisId='left'
-                                    dot={<SelectedDot selectedKey={selectedKey} />}
+                                    dot={
+                                        <SelectedDot
+                                            selectedKey={selectedKey}
+                                            strokeColor={themeObject.areaStroke}
+                                        />
+                                    }
                                 />
                             </ComposedChart>
                         </Brush>
@@ -247,8 +291,8 @@ const StyledChartContainer = styled.div`
     margin-top: 32px;
     box-sizing: border-box;
     border-radius: 20px;
-    background-color: white;
-    box-shadow: 0 0 20px #ecebebdd;
+    background-color: ${props => props.theme.bgColor};
+    box-shadow: 0 0 20px ${props => props.theme.boxShadow};
     .yAxis {
         user-select: none;
     }
@@ -275,18 +319,11 @@ const StyledZoomButton = styled.button`
     align-items: center;
     box-sizing: border-box;
     padding: 6px 8px 6px 8px;
-    border: 1px solid #dddd;
+    border: 1px solid ${props => props.theme.borderColor};
     border-radius: 8px;
-    color: #717171;
-    background-color: #efefef;
+    color: ${props => props.theme.textColorGrey};
+    background-color: ${props => props.theme.buttonDefault};
     cursor: pointer;
-    box-shadow: 0 0 10px #efefef;
+    box-shadow: 0 0 10px ${props => props.theme.boxShadow};
     font-size: 16px;
-
-    &.selected {
-        border-color: #efefef;
-        color: #1a6da1;
-        background-color: #d1edff;
-        font-weight: 500;
-    }
 `;
