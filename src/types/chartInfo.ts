@@ -15,4 +15,9 @@ export interface ChartItem {
     value_bar: number;
 }
 
+export interface ChartData {
+    commonTime: string;
+    data: ChartItem[];
+}
+
 export type ChartSelectedKey = string | number;
