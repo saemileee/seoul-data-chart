@@ -33,6 +33,7 @@ const StyledChartContainer = styled.ul`
 `;
 
 const StyledFilterButton = styled.li`
+    user-select: none;
     padding: 6px 14px 4px 14px;
     border: 1px solid #bbbbbb;
     border-radius: 30px;
