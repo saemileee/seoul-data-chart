@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 
 const useDragNDropZoom = (containerRef: any) => {
     const [zoomedIdx, setZoomedIdx] = useState<null | number[]>(null);
@@ -13,9 +13,9 @@ const useDragNDropZoom = (containerRef: any) => {
         height: number;
     } | null>(null);
 
-    const toggleDragZoomInMode = () => {
+    const toggleDragZoomInMode = useCallback(() => {
         setIsDragZoomInMode(prev => !prev);
-    };
+    }, []);
 
     const startDrawBox = (e: React.MouseEvent, idx: number) => {
         if (isDragZoomInMode) {
@@ -67,7 +67,6 @@ const useDragNDropZoom = (containerRef: any) => {
         } else {
             setZoomedIdx([idx, idx]);
         }
-        // setZoomCounts(prev => prev + 1);
     };
 
     const endDrawBox = (idx: number) => {
