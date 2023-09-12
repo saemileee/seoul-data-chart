@@ -29,7 +29,7 @@ export const darkTheme = {
     textColorLight: '#ffffff',
     borderColor: '#697179',
     primaryColor: '#3d7eff',
-    boxShadow: '#414141',
+    boxShadow: '#1C1E23',
     buttonDefault: '#4F5D69',
     barStopColorStart: '#4C1FCD',
     barStopColorEnd: '#815FE0',

@@ -15,7 +15,9 @@ const themeContext = createContext<themeContext>({
 });
 
 export const ThemeProvider = ({children}: any) => {
-    const [themeMode, setThemeMode] = useState<themeMode>('light');
+    const localThemeItem = window.localStorage.getItem('theme');
+    const localTheme = localThemeItem !== 'light' || 'dark' ? 'light' : localThemeItem;
+    const [themeMode, setThemeMode] = useState<themeMode>(localTheme);
     const themeObject = themeMode === 'light' ? lightTheme : darkTheme;
 
     return (
@@ -33,8 +35,10 @@ const useTheme = () => {
     const toggleTheme = useCallback(() => {
         if (themeMode === 'light') {
             setThemeMode('dark');
+            window.localStorage.setItem('theme', 'dark');
         } else {
             setThemeMode('light');
+            window.localStorage.setItem('theme', 'light');
         }
     }, [themeMode]);
 
