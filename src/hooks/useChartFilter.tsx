@@ -56,7 +56,6 @@ const useChartFilter = (filterKey: keyof ChartItem, initData: ChartItem[]) => {
             }
             setSelectedFilters(newSelectedFilters);
         } else {
-            console.info('reset param');
             resetFilter();
         }
     };
