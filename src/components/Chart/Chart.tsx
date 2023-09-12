@@ -225,7 +225,7 @@ const Chart = ({data}: ChartProps) => {
                                         fill={themeObject.referenceAreaFill}
                                         opacity={`${selectedFilters[id] ? 0.5 : 0}`}
                                         onClick={() => {
-                                            toggleFilter(id);
+                                            !isZoomModeActive && toggleFilter(id);
                                         }}
                                     />
                                 );
