@@ -1,9 +1,11 @@
 import {ChartSelectedKey} from '../../types/chartInfo';
 import styled from 'styled-components';
+import React from 'react';
 
 interface ChartFilterProps {
     selectedKey: ChartSelectedKey;
-    selectFilter: (key: ChartSelectedKey) => void;
+    // eslint-disable-next-line no-unused-vars
+    selectFilter: (option: ChartSelectedKey) => void;
     filterOptions: (string | number)[];
 }
 

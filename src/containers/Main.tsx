@@ -4,6 +4,7 @@ import useChart from '../hooks/useChart';
 import styled from 'styled-components';
 import useTheme from '../hooks/useTheme';
 import ThemeToggle from '../components/ThemeToggle';
+import React from 'react';
 
 const Main = () => {
     const {toggleTheme, themeMode} = useTheme();

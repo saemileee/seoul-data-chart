@@ -2,6 +2,7 @@ import Main from './containers/Main';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {ThemeProvider} from './hooks/useTheme';
 import GlobalStyle from './styles/GlobalStyle';
+import React from 'react';
 
 const App = () => {
     return (

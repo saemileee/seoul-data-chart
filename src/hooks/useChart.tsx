@@ -11,7 +11,7 @@ const useChart = (cb: () => Promise<ResponseData>) => {
         if (fetchData) {
             const newData = Object.entries(fetchData).map(data => {
                 const [time, values] = data;
-                return {time, ...values};
+                return {time: time.replace('2023-', ''), ...values};
             });
             setData(newData);
         }

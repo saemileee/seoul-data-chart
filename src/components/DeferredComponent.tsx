@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import useDebounce from '../hooks/useDebounce';
 
 interface DeferredComponentProps {

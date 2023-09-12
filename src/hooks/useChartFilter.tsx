@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
-import * as Type from '../types/chartInfo.ts';
 import {useSearchParams} from 'react-router-dom';
+import {ChartItem, ChartSelectedKey} from '../types/chartInfo';
 
-const useChartFilter = (filterKey: keyof Type.ChartItem, initData: Type.ChartItem[]) => {
+const useChartFilter = (filterKey: keyof ChartItem, initData: ChartItem[]) => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [selectedKey, setSelectedKey] = useState<Type.ChartSelectedKey>('All');
+    const [selectedKey, setSelectedKey] = useState<ChartSelectedKey>('All');
 
     useEffect(() => {
         const key = searchParams.get('filter');
@@ -19,7 +19,7 @@ const useChartFilter = (filterKey: keyof Type.ChartItem, initData: Type.ChartIte
 
     const filterOptions = ['All', ...new Set(initData.map(item => item[filterKey]))];
 
-    const selectFilter = (key: Type.ChartSelectedKey) => {
+    const selectFilter = (key: ChartSelectedKey) => {
         if (filterOptions.includes(key!)) {
             setSelectedKey(key);
             searchParams.set('filter', key!.toString());

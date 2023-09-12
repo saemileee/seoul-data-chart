@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
 
 const DEFAULT_BOX_HEIGHT = 277;
 
-const useDragNDropZoom = (containerRef: any) => {
+const useDragNDropZoom = (containerRef: React.RefObject<HTMLDivElement>) => {
     const [zoomedIdx, setZoomedIdx] = useState<null | number[]>(null);
     const [onMouseDownClientX, setOnMouseDownClientX] = useState(0);
     const [onMouseDownIdx, setOnMouseDownIdx] = useState(0);
@@ -27,7 +27,7 @@ const useDragNDropZoom = (containerRef: any) => {
         setOnMouseDownIdx(idx);
     };
 
-    const drawBox = (e: any) => {
+    const drawBox = (e: React.MouseEvent) => {
         const currentClientX = e.clientX;
         const clientWidth = containerRef.current!.clientWidth;
         const isMovingToRight = onMouseDownClientX - currentClientX < 0;
