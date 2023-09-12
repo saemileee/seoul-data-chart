@@ -10,6 +10,7 @@ import {
     Cell,
     ReferenceArea,
     Label,
+    ResponsiveContainer,
 } from 'recharts';
 import {ChartItem, ChartSelectedKey} from '../../types/chartInfo';
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
@@ -84,121 +85,159 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     };
 
     return (
-        <div
-            style={{
-                width: '100vw',
-                position: 'initial',
-            }}
-        >
+        <StyledChartContainer>
             {dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
-            <StyledToggleDragZoomInMode
-                className={`${isDragZoomInMode && 'selected'}`}
-                onClick={() => toggleDragZoomInMode()}
-            >
-                Zoom Mode
-            </StyledToggleDragZoomInMode>
-            <button onClick={() => resetZoom()}>Reset Zoom</button>
+            <StyledZoomButtonContainer>
+                <StyledToggleDragZoomInMode
+                    className={`${isDragZoomInMode && 'selected'}`}
+                    onClick={() => toggleDragZoomInMode()}
+                >
+                    Zoom Mode
+                </StyledToggleDragZoomInMode>
+                <button onClick={() => resetZoom()}>Reset Zoom</button>
+            </StyledZoomButtonContainer>
             <div ref={containerRef}>
-                <ComposedChart key={zoomCounts} width={1000} height={400} data={data}>
-                    <XAxis dataKey='time' height={40}>
-                        <Label value='2023년' position='insideBottom' />
-                    </XAxis>
-                    <YAxis yAxisId='left' />
-                    <YAxis yAxisId='right' orientation='right' />
-                    <Legend />
-
-                    <Tooltip content={<CustomTooltip />} />
-
-                    <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
-                        {data.map((entry, index) => (
-                            <Cell
-                                cursor='pointer'
-                                fill={entry.id === selectedKey ? ' #01b07b' : '#a7e9c0'}
-                                key={`cell-${index}`}
-                            />
-                        ))}
-                    </Bar>
-                    <defs>
-                        <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
-                            <stop offset='5%' stopColor='#ff6b39' stopOpacity={1} />
-                            <stop offset='95%' stopColor='#ff6b39' stopOpacity={0.3} />
-                        </linearGradient>
-                    </defs>
-                    <Area
-                        key={selectedKey}
-                        dataKey='value_area'
-                        type='monotone'
-                        fill='url(#colorArea)'
-                        stroke='#ff6b39'
-                        yAxisId='left'
-                        dot={<SelectedDot selectedKey={selectedKey} />}
-                    />
-                    {data.map((data, idx) => {
-                        const {time, id} = data;
-                        return (
-                            <ReferenceArea
-                                onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
-                                onMouseMove={e => {
-                                    drawBox(e);
-                                }}
-                                onMouseDown={e => {
-                                    startDrawBox(e, idx);
-                                }}
-                                onMouseUp={() => {
-                                    endDrawBox(idx);
-                                }}
-                                key={time}
-                                yAxisId='right'
-                                x1={time}
-                                x2={time}
-                                fill='#7ef5fb'
-                                opacity={`${id === selectedKey ? 0.5 : 0}`}
-                                onClick={() => {
-                                    setSelectedKey(id);
-                                }}
-                            />
-                        );
-                    })}
-
-                    <Brush
-                        dataKey='time'
-                        travellerWidth={10}
-                        height={60}
-                        fill='#ffffff'
-                        startIndex={startIdx}
-                        endIndex={endIdx}
-                        onChange={e => {
-                            handleChangeBrush(e.startIndex!, e.endIndex!);
-                        }}
+                <ResponsiveContainer width='100%' height={400}>
+                    <ComposedChart
+                        width={760}
+                        height={500}
+                        key={zoomCounts}
+                        data={data}
+                        margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
-                        <ComposedChart width={1000} height={400} data={data}>
-                            <Bar dataKey='value_bar' fill='#82ca9d' barSize={20} yAxisId='right'>
-                                {data.map((entry, index) => (
-                                    <Cell
-                                        cursor='pointer'
-                                        fill={entry.id === selectedKey ? ' #82ca9d' : '#abdcbe'}
-                                        key={`cell-${index}`}
-                                    />
-                                ))}
-                            </Bar>
-                            <Area
-                                key={selectedKey}
-                                dataKey='value_area'
-                                type='monotone'
-                                fill='#ff885c94'
-                                stroke='#ff875c'
-                                yAxisId='left'
-                                dot={<SelectedDot selectedKey={selectedKey} />}
-                            />
-                        </ComposedChart>
-                    </Brush>
-                </ComposedChart>
+                        <XAxis dataKey='time' height={40}>
+                            <Label value='2023년' position='insideBottom' />
+                        </XAxis>
+                        <YAxis yAxisId='left' />
+                        <YAxis yAxisId='right' orientation='right' />
+                        <Legend />
+
+                        <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
+
+                        <Bar
+                            isAnimationActive={false}
+                            dataKey='value_bar'
+                            fill='#82ca9d'
+                            barSize={20}
+                            yAxisId='right'
+                        >
+                            {data.map((entry, index) => (
+                                <Cell
+                                    cursor='pointer'
+                                    fill={entry.id === selectedKey ? ' #01b07b' : '#a7e9c0'}
+                                    key={`cell-${index}`}
+                                />
+                            ))}
+                        </Bar>
+                        <defs>
+                            <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
+                                <stop offset='5%' stopColor='#ff6b39' stopOpacity={1} />
+                                <stop offset='95%' stopColor='#ff6b39' stopOpacity={0.3} />
+                            </linearGradient>
+                        </defs>
+                        <Area
+                            isAnimationActive={false}
+                            key={selectedKey}
+                            dataKey='value_area'
+                            type='monotone'
+                            fill='url(#colorArea)'
+                            stroke='#ff6b39'
+                            yAxisId='left'
+                            dot={<SelectedDot selectedKey={selectedKey} />}
+                        />
+                        {data.map((data, idx) => {
+                            const {time, id} = data;
+                            return (
+                                <ReferenceArea
+                                    onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
+                                    onMouseMove={e => {
+                                        drawBox(e);
+                                    }}
+                                    onMouseDown={e => {
+                                        startDrawBox(e, idx);
+                                    }}
+                                    onMouseUp={() => {
+                                        endDrawBox(idx);
+                                    }}
+                                    key={time}
+                                    yAxisId='right'
+                                    x1={time}
+                                    x2={time}
+                                    fill='#7ef5fb'
+                                    opacity={`${id === selectedKey ? 0.5 : 0}`}
+                                    onClick={() => {
+                                        setSelectedKey(id);
+                                    }}
+                                />
+                            );
+                        })}
+
+                        <Brush
+                            dataKey='time'
+                            travellerWidth={10}
+                            height={60}
+                            fill='#ffffff'
+                            startIndex={startIdx}
+                            endIndex={endIdx}
+                            onChange={e => {
+                                handleChangeBrush(e.startIndex!, e.endIndex!);
+                            }}
+                        >
+                            <ComposedChart width={1000} height={400} data={data}>
+                                <Bar
+                                    isAnimationActive={false}
+                                    dataKey='value_bar'
+                                    fill='#82ca9d'
+                                    barSize={20}
+                                    yAxisId='right'
+                                >
+                                    {data.map((entry, index) => (
+                                        <Cell
+                                            cursor='pointer'
+                                            fill={entry.id === selectedKey ? ' #82ca9d' : '#abdcbe'}
+                                            key={`cell-${index}`}
+                                        />
+                                    ))}
+                                </Bar>
+                                <Area
+                                    isAnimationActive={false}
+                                    key={selectedKey}
+                                    dataKey='value_area'
+                                    type='monotone'
+                                    fill='#ff885c94'
+                                    stroke='#ff875c'
+                                    yAxisId='left'
+                                    dot={<SelectedDot selectedKey={selectedKey} />}
+                                />
+                            </ComposedChart>
+                        </Brush>
+                    </ComposedChart>
+                </ResponsiveContainer>
             </div>
-        </div>
+        </StyledChartContainer>
     );
 };
 
 export default Chart;
+
+const StyledChartContainer = styled.div`
+    min-width: 320px;
+    position: initial;
+    padding: 20px 0 20px 0;
+    margin-top: 32px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 0 20px #ecebebdd;
+`;
+
+const StyledZoomButtonContainer = styled.div`
+    margin-right: 20px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+`;
 
 const StyledToggleDragZoomInMode = styled.button`
     padding: 4px 14px 4px 14px;
