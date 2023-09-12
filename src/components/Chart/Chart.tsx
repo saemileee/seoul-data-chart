@@ -27,6 +27,8 @@ import useToggle from '../../hooks/useToggle';
 import ChartFilter from './ChartFilter';
 import useChartFilter from '../../hooks/useChartFilter';
 import useTheme from '../../hooks/useTheme';
+import LoadingSpinner from '../LoadingSpinner';
+import DeferredComponent from '../DeferredComponent';
 
 interface ChartProps {
     data: ChartItem[];
@@ -106,176 +108,182 @@ const Chart = ({data}: ChartProps) => {
                     </StyledZoomButton>
                 </StyledZoomButtonContainer>
             </StyledButtonContainer>
-            <div ref={containerRef}>
-                <ResponsiveContainer width='100%' height={400}>
-                    <ComposedChart
-                        width={760}
-                        height={500}
-                        key={zoomCounts}
-                        data={data}
-                        margin={{top: 5, right: 30, left: 20, bottom: 5}}
-                    >
-                        <XAxis
-                            dataKey='time'
-                            height={40}
-                            tickMargin={12}
-                            stroke={themeObject.axisStroke}
+            <DeferredComponent loadingComponent={<LoadingSpinner />}>
+                <div ref={containerRef}>
+                    <ResponsiveContainer width='100%' height={400}>
+                        <ComposedChart
+                            width={760}
+                            height={500}
+                            key={zoomCounts}
+                            data={data}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
                         >
-                            <Label
-                                value='2023년 2월 1일'
-                                position='insideBottom'
-                                dy={15}
-                                fontSize={14}
-                                className='xAxisLabel'
-                                color={themeObject.textColorDefault}
+                            <XAxis
+                                dataKey='time'
+                                height={40}
+                                tickMargin={12}
+                                stroke={themeObject.axisStroke}
+                            >
+                                <Label
+                                    value='2023년 2월 1일'
+                                    position='insideBottom'
+                                    dy={15}
+                                    fontSize={14}
+                                    className='xAxisLabel'
+                                    color={themeObject.textColorDefault}
+                                />
+                            </XAxis>
+                            <YAxis
+                                stroke={themeObject.axisStroke}
+                                yAxisId='left'
+                                className='yAxis'
                             />
-                        </XAxis>
-                        <YAxis stroke={themeObject.axisStroke} yAxisId='left' className='yAxis' />
-                        <YAxis
-                            stroke={themeObject.axisStroke}
-                            yAxisId='right'
-                            orientation='right'
-                            className='yAxis'
-                        />
-                        <Legend
-                            wrapperStyle={{
-                                paddingTop: '20px',
-                            }}
-                        />
+                            <YAxis
+                                stroke={themeObject.axisStroke}
+                                yAxisId='right'
+                                orientation='right'
+                                className='yAxis'
+                            />
+                            <Legend
+                                wrapperStyle={{
+                                    paddingTop: '20px',
+                                }}
+                            />
 
-                        <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
-                        <CartesianGrid strokeDasharray='3 3' stroke={themeObject.axisStroke} />
+                            <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
+                            <CartesianGrid strokeDasharray='3 3' stroke={themeObject.axisStroke} />
 
-                        <defs>
-                            <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
-                                <stop
-                                    offset='50%'
-                                    stopColor={themeObject.barStopColorStart}
-                                    stopOpacity={1}
-                                />
-                                <stop
-                                    offset='100%'
-                                    stopColor={themeObject.barStopColorEnd}
-                                    stopOpacity={0.3}
-                                />
-                            </linearGradient>
-                        </defs>
-                        <Bar
-                            isAnimationActive={false}
-                            dataKey='value_bar'
-                            fill='url(#colorBar)'
-                            barSize={20}
-                            yAxisId='right'
-                        ></Bar>
-                        <defs>
-                            <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
-                                <stop
-                                    offset='50%'
-                                    stopColor={themeObject.areaStopColorStart}
-                                    stopOpacity={1}
-                                />
-                                <stop
-                                    offset='100%'
-                                    stopColor={themeObject.areaStopColorEnd}
-                                    stopOpacity={0.3}
-                                />
-                            </linearGradient>
-                        </defs>
-                        <Area
-                            isAnimationActive={false}
-                            key={selectedKey}
-                            dataKey='value_area'
-                            type='monotone'
-                            fill='url(#colorArea)'
-                            stroke={themeObject.areaStroke}
-                            yAxisId='left'
-                            dot={
-                                <SelectedDot
-                                    selectedKey={selectedKey}
-                                    strokeColor={themeObject.areaStroke}
-                                />
-                            }
-                        />
-                        {data.map((data, idx) => {
-                            const {time, id} = data;
-                            return (
-                                <ReferenceArea
-                                    onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
-                                    onMouseMove={e => {
-                                        isZoomModeActive && drawBox(e);
-                                    }}
-                                    onMouseDown={e => {
-                                        isZoomModeActive && startDrawBox(e, idx);
-                                    }}
-                                    onMouseUp={() => {
-                                        isZoomModeActive && endDrawBox(idx);
-                                    }}
-                                    key={time}
-                                    yAxisId='right'
-                                    x1={time}
-                                    x2={time}
-                                    fill={themeObject.referenceAreaFill}
-                                    opacity={`${id === selectedKey ? 0.3 : 0}`}
-                                    onClick={() => {
-                                        selectFilter(id);
-                                    }}
-                                />
-                            );
-                        })}
+                            <defs>
+                                <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
+                                    <stop
+                                        offset='50%'
+                                        stopColor={themeObject.barStopColorStart}
+                                        stopOpacity={1}
+                                    />
+                                    <stop
+                                        offset='100%'
+                                        stopColor={themeObject.barStopColorEnd}
+                                        stopOpacity={0.3}
+                                    />
+                                </linearGradient>
+                            </defs>
+                            <Bar
+                                isAnimationActive={false}
+                                dataKey='value_bar'
+                                fill='url(#colorBar)'
+                                barSize={20}
+                                yAxisId='right'
+                            ></Bar>
+                            <defs>
+                                <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
+                                    <stop
+                                        offset='50%'
+                                        stopColor={themeObject.areaStopColorStart}
+                                        stopOpacity={1}
+                                    />
+                                    <stop
+                                        offset='100%'
+                                        stopColor={themeObject.areaStopColorEnd}
+                                        stopOpacity={0.3}
+                                    />
+                                </linearGradient>
+                            </defs>
+                            <Area
+                                isAnimationActive={false}
+                                key={selectedKey}
+                                dataKey='value_area'
+                                type='monotone'
+                                fill='url(#colorArea)'
+                                stroke={themeObject.areaStroke}
+                                yAxisId='left'
+                                dot={
+                                    <SelectedDot
+                                        selectedKey={selectedKey}
+                                        strokeColor={themeObject.areaStroke}
+                                    />
+                                }
+                            />
+                            {data.map((data, idx) => {
+                                const {time, id} = data;
+                                return (
+                                    <ReferenceArea
+                                        onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
+                                        onMouseMove={e => {
+                                            isZoomModeActive && drawBox(e);
+                                        }}
+                                        onMouseDown={e => {
+                                            isZoomModeActive && startDrawBox(e, idx);
+                                        }}
+                                        onMouseUp={() => {
+                                            isZoomModeActive && endDrawBox(idx);
+                                        }}
+                                        key={time}
+                                        yAxisId='right'
+                                        x1={time}
+                                        x2={time}
+                                        fill={themeObject.referenceAreaFill}
+                                        opacity={`${id === selectedKey ? 0.3 : 0}`}
+                                        onClick={() => {
+                                            selectFilter(id);
+                                        }}
+                                    />
+                                );
+                            })}
 
-                        <Brush
-                            className='brush'
-                            dataKey='time'
-                            travellerWidth={10}
-                            stroke={themeObject.borderColor}
-                            height={40}
-                            fill={themeObject.bgColor}
-                            startIndex={startIdx}
-                            endIndex={endIdx}
-                            onChange={e => {
-                                handleChangeBrush(e.startIndex!, e.endIndex!);
-                            }}
-                        >
-                            <ComposedChart width={1000} height={400} data={data}>
-                                <Bar
-                                    isAnimationActive={false}
-                                    dataKey='value_bar'
-                                    fill={themeObject.barSelectedColor}
-                                    barSize={20}
-                                    yAxisId='right'
-                                >
-                                    {data.map((entry, index) => (
-                                        <Cell
-                                            cursor='pointer'
-                                            fill={
-                                                entry.id === selectedKey
-                                                    ? themeObject.barSelectedColor
-                                                    : themeObject.barStopColorStart
-                                            }
-                                            key={`cell-${index}`}
-                                        />
-                                    ))}
-                                </Bar>
-                                <Area
-                                    isAnimationActive={false}
-                                    key={selectedKey}
-                                    dataKey='value_area'
-                                    type='monotone'
-                                    fill={themeObject.areaStopColorStart}
-                                    stroke={themeObject.areaStroke}
-                                    yAxisId='left'
-                                    dot={
-                                        <SelectedDot
-                                            selectedKey={selectedKey}
-                                            strokeColor={themeObject.areaStroke}
-                                        />
-                                    }
-                                />
-                            </ComposedChart>
-                        </Brush>
-                    </ComposedChart>
-                </ResponsiveContainer>
-            </div>
+                            <Brush
+                                className='brush'
+                                dataKey='time'
+                                travellerWidth={10}
+                                stroke={themeObject.borderColor}
+                                height={40}
+                                fill={themeObject.bgColor}
+                                startIndex={startIdx}
+                                endIndex={endIdx}
+                                onChange={e => {
+                                    handleChangeBrush(e.startIndex!, e.endIndex!);
+                                }}
+                            >
+                                <ComposedChart width={1000} height={400} data={data}>
+                                    <Bar
+                                        isAnimationActive={false}
+                                        dataKey='value_bar'
+                                        fill={themeObject.barSelectedColor}
+                                        barSize={20}
+                                        yAxisId='right'
+                                    >
+                                        {data.map((entry, index) => (
+                                            <Cell
+                                                cursor='pointer'
+                                                fill={
+                                                    entry.id === selectedKey
+                                                        ? themeObject.barSelectedColor
+                                                        : themeObject.barStopColorStart
+                                                }
+                                                key={`cell-${index}`}
+                                            />
+                                        ))}
+                                    </Bar>
+                                    <Area
+                                        isAnimationActive={false}
+                                        key={selectedKey}
+                                        dataKey='value_area'
+                                        type='monotone'
+                                        fill={themeObject.areaStopColorStart}
+                                        stroke={themeObject.areaStroke}
+                                        yAxisId='left'
+                                        dot={
+                                            <SelectedDot
+                                                selectedKey={selectedKey}
+                                                strokeColor={themeObject.areaStroke}
+                                            />
+                                        }
+                                    />
+                                </ComposedChart>
+                            </Brush>
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                </div>
+            </DeferredComponent>
         </StyledChartContainer>
     );
 };
