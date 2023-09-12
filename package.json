@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "json-server --watch db.json --port 4000 & vite",
-        "build": "tsc && vite build",
+        "build": "GENERATE_SOURCEMAP=false && tsc && vite build",
         "preview": "vite preview",
         "postinstall": "husky install",
         "format": "prettier --cache --write .",
