@@ -14,7 +14,7 @@ import {
     ResponsiveContainer,
     CartesianGrid,
 } from 'recharts';
-import {ChartItem} from '../../types/chartInfo';
+import {ChartData} from '../../types/chartInfo';
 import React, {useEffect, useRef, useState} from 'react';
 import SelectedDot from './Custom/SelectedDot';
 import CustomTooltip from './Custom/Tooltip';
@@ -31,21 +31,30 @@ import LoadingSpinner from '../LoadingSpinner';
 import DeferredComponent from '../DeferredComponent';
 
 interface ChartProps {
-    data: ChartItem[];
+    chartData: ChartData;
 }
 
 const INIT_START_IDX = 0;
 
-const Chart = ({data}: ChartProps) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const {themeObject} = useTheme();
+const Chart = ({chartData}: ChartProps) => {
+    const {themeMode, themeObject} = useTheme();
+
+    const gridRef = useRef<CartesianGrid>(null);
+    const legendRef = useRef<HTMLSpanElement>(null);
+    const chartContainer = useRef<HTMLDivElement>(null);
+
+    const zoomBoxTop = legendRef.current
+        ? legendRef.current.offsetParent!.getBoundingClientRect().bottom
+        : 0;
+    const zoomBoxHeight = gridRef.current ? gridRef.current.props.height : 1;
+    const chartContainerWidth = chartContainer.current ? chartContainer.current.clientWidth : 0;
+
+    const {commonTime, data} = chartData;
 
     const INIT_END_IDX = data.length - 1;
-
     const [startIdx, setStartIdx] = useState(INIT_START_IDX);
     const [endIdx, setEndIdx] = useState(INIT_END_IDX);
     const [zoomCounts, setZoomCounts] = useState(0);
-
     const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
     const {selectedFilters, filterOptions, toggleFilter, resetFilter} = useChartFilter('id', data);
 
@@ -55,7 +64,7 @@ const Chart = ({data}: ChartProps) => {
         startDrawBox,
         drawBox,
         endDrawBox,
-    } = useDragNDropZoom(containerRef);
+    } = useDragNDropZoom(zoomBoxTop, zoomBoxHeight, chartContainerWidth);
 
     const {isActive: isZoomModeActive, Toggle} = useToggle();
 
@@ -75,8 +84,6 @@ const Chart = ({data}: ChartProps) => {
         }
     }, [dragNDropIdx]);
 
-    const debounce = useDebounce();
-
     const resetZoom = () => {
         if (startIdx !== INIT_START_IDX || endIdx !== INIT_END_IDX) {
             setStartIdx(INIT_START_IDX);
@@ -84,6 +91,8 @@ const Chart = ({data}: ChartProps) => {
             setZoomCounts(prev => prev + 1);
         }
     };
+
+    const debounce = useDebounce();
 
     const handleChangeBrush = (startIndex: number, endIndex: number) => {
         debounce(() => {
@@ -94,7 +103,6 @@ const Chart = ({data}: ChartProps) => {
 
     return (
         <StyledChartContainer>
-            {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
             <StyledButtonContainer>
                 <ChartFilter
                     selectedFilters={selectedFilters}
@@ -110,7 +118,8 @@ const Chart = ({data}: ChartProps) => {
                 </StyledZoomButtonContainer>
             </StyledButtonContainer>
             <DeferredComponent loadingComponent={<LoadingSpinner />}>
-                <div ref={containerRef}>
+                <div ref={chartContainer}>
+                    {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
                     <ResponsiveContainer width='100%' height={550}>
                         <ComposedChart
                             key={zoomCounts}
@@ -124,9 +133,10 @@ const Chart = ({data}: ChartProps) => {
                                 stroke={themeObject.axisStroke}
                             >
                                 <Label
-                                    value='2023년 2월 1일'
-                                    position='insideBottom'
-                                    dy={15}
+                                    value={`Time : ${commonTime}`}
+                                    position='insideLeft'
+                                    dy={24}
+                                    dx={0}
                                     fontSize={14}
                                     className='xAxisLabel'
                                     color={themeObject.textColorDefault}
@@ -165,16 +175,29 @@ const Chart = ({data}: ChartProps) => {
                             </YAxis>
 
                             <Legend
+                                verticalAlign='top'
                                 formatter={value => (
-                                    <span style={{color: themeObject.textColorGrey}}>{value}</span>
+                                    <span
+                                        ref={legendRef}
+                                        style={{color: themeObject.textColorGrey}}
+                                    >
+                                        {value}
+                                    </span>
                                 )}
                                 wrapperStyle={{
-                                    paddingTop: '20px',
+                                    paddingBottom: '20px',
                                 }}
                             />
 
                             <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
-                            <CartesianGrid strokeDasharray='3 3' stroke={themeObject.axisStroke} />
+
+                            <CartesianGrid
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-ignore
+                                ref={gridRef}
+                                strokeDasharray='3 3'
+                                stroke={themeObject.axisStroke}
+                            />
 
                             <defs>
                                 <linearGradient id='colorBar' x1='0' y1='0' x2='0' y2='1'>
@@ -253,13 +276,17 @@ const Chart = ({data}: ChartProps) => {
                             })}
 
                             <Brush
-                                y={450}
+                                y={500}
                                 className='brush'
                                 dataKey='time'
                                 travellerWidth={10}
-                                stroke={themeObject.borderColor}
+                                stroke={themeObject.textColorGrey}
                                 height={40}
-                                fill={themeObject.bgColor}
+                                fill={
+                                    themeMode === 'light'
+                                        ? themeObject.textColorLight
+                                        : themeObject.zoomInBoxBg
+                                }
                                 startIndex={startIdx}
                                 endIndex={endIdx}
                                 onChange={e => {
