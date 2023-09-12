@@ -88,12 +88,11 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
 
     return (
         <StyledChartContainer>
-            {dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
+            {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
             <StyledZoomButtonContainer>
                 <Toggle innerLabel='Zoom' />
                 <StyledZoomButton onClick={() => resetZoom()}>
                     <MdZoomOutMap size={17} />
-                    Full chart
                 </StyledZoomButton>
             </StyledZoomButtonContainer>
             <div ref={containerRef}>
@@ -105,12 +104,22 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         data={data}
                         margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
-                        <XAxis dataKey='time' height={40}>
-                            <Label value='2023년' position='insideBottom' />
+                        <XAxis dataKey='time' height={40} tickMargin={12}>
+                            <Label
+                                value='2023년 2월 1일'
+                                position='insideBottom'
+                                dy={15}
+                                fontSize={14}
+                                className='xAxisLabel'
+                            />
                         </XAxis>
-                        <YAxis yAxisId='left' />
-                        <YAxis yAxisId='right' orientation='right' />
-                        <Legend />
+                        <YAxis yAxisId='left' className='yAxis' />
+                        <YAxis yAxisId='right' orientation='right' className='yAxis' />
+                        <Legend
+                            wrapperStyle={{
+                                paddingTop: '20px',
+                            }}
+                        />
 
                         <Tooltip isAnimationActive={false} content={<CustomTooltip />} />
 
@@ -173,9 +182,10 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
                         })}
 
                         <Brush
+                            className='brush'
                             dataKey='time'
                             travellerWidth={10}
-                            height={60}
+                            height={40}
                             fill='#ffffff'
                             startIndex={startIdx}
                             endIndex={endIdx}
@@ -229,20 +239,26 @@ const StyledChartContainer = styled.div`
     border-radius: 20px;
     background-color: white;
     box-shadow: 0 0 20px #ecebebdd;
+
+    .yAxis {
+        user-select: none;
+    }
 `;
 
 const StyledZoomButtonContainer = styled.div`
-    margin-right: 20px;
+    margin-right: 24px;
     margin-bottom: 32px;
     display: flex;
     justify-content: end;
-    gap: 16px;
+    gap: 12px;
 `;
 
 const StyledZoomButton = styled.button`
     display: flex;
+    justify-content: center;
+    align-items: center;
     box-sizing: border-box;
-    padding: 6px 14px 6px 14px;
+    padding: 6px 8px 6px 8px;
     border: 1px solid #dddd;
     border-radius: 8px;
     color: #717171;
@@ -250,9 +266,7 @@ const StyledZoomButton = styled.button`
     cursor: pointer;
     box-shadow: 0 0 10px #efefef;
     font-size: 16px;
-    svg {
-        margin-right: 6px;
-    }
+
     &.selected {
         border-color: #efefef;
         color: #1a6da1;
