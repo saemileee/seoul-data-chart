@@ -23,16 +23,18 @@ import styled from 'styled-components';
 import DragZoomInBox from './Custom/DragZoomInBox';
 import useWheelZoom from '../../hooks/useWheelZoom';
 import useToggle from '../../hooks/useToggle';
+import ChartFilter from './ChartFilter';
+import useChartFilter from '../../hooks/useChartFilter';
 
 interface ChartProps {
     data: ChartItem[];
-    selectedKey: ChartSelectedKey;
-    setSelectedKey: Dispatch<SetStateAction<ChartSelectedKey>>;
+    selectedKey?: ChartSelectedKey;
+    setSelectedKey?: Dispatch<SetStateAction<ChartSelectedKey>>;
 }
 
 const INIT_START_IDX = 0;
 
-const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
+const Chart = ({data}: ChartProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const INIT_END_IDX = data.length - 1;
@@ -42,6 +44,7 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     const [zoomCounts, setZoomCounts] = useState(0);
 
     const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
+    const {selectedKey, filterOptions, setSelectedKey} = useChartFilter('id', data);
 
     const {
         zoomedIdx: dragNDropIdx,
@@ -89,12 +92,19 @@ const Chart = ({data, selectedKey = null, setSelectedKey}: ChartProps) => {
     return (
         <StyledChartContainer>
             {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
-            <StyledZoomButtonContainer>
-                <Toggle innerLabel='Zoom' />
-                <StyledZoomButton onClick={() => resetZoom()}>
-                    <MdZoomOutMap size={17} />
-                </StyledZoomButton>
-            </StyledZoomButtonContainer>
+            <StyledButtonContainer>
+                <ChartFilter
+                    selectedKey={selectedKey}
+                    setSelectedKey={setSelectedKey}
+                    filterOptions={filterOptions}
+                />
+                <StyledZoomButtonContainer>
+                    <Toggle innerLabel='Zoom' />
+                    <StyledZoomButton onClick={() => resetZoom()}>
+                        <MdZoomOutMap size={17} />
+                    </StyledZoomButton>
+                </StyledZoomButtonContainer>
+            </StyledButtonContainer>
             <div ref={containerRef}>
                 <ResponsiveContainer width='100%' height={400}>
                     <ComposedChart
@@ -239,16 +249,22 @@ const StyledChartContainer = styled.div`
     border-radius: 20px;
     background-color: white;
     box-shadow: 0 0 20px #ecebebdd;
-
     .yAxis {
         user-select: none;
     }
 `;
 
+const StyledButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+`;
+
 const StyledZoomButtonContainer = styled.div`
     margin-right: 24px;
-    margin-bottom: 32px;
     display: flex;
+    align-items: center;
     justify-content: end;
     gap: 12px;
 `;
