@@ -1,5 +1,5 @@
 import {seoulAPI} from './instance';
-import * as Type from '../types/seoulInfo.ts';
+import * as Type from '../types/chartInfo';
 
 export const getSeoulInfo = async (): Promise<Type.ResponseData> => {
     const res = await seoulAPI.get('');
