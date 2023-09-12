@@ -111,13 +111,11 @@ const Chart = ({data}: ChartProps) => {
             </StyledButtonContainer>
             <DeferredComponent loadingComponent={<LoadingSpinner />}>
                 <div ref={containerRef}>
-                    <ResponsiveContainer width='100%' height={400}>
+                    <ResponsiveContainer width='100%' height={550}>
                         <ComposedChart
-                            width={760}
-                            height={500}
                             key={zoomCounts}
                             data={data}
-                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            margin={{top: 35, right: 30, left: 20, bottom: 45}}
                         >
                             <XAxis
                                 dataKey='time'
@@ -134,18 +132,42 @@ const Chart = ({data}: ChartProps) => {
                                     color={themeObject.textColorDefault}
                                 />
                             </XAxis>
+
                             <YAxis
-                                stroke={themeObject.axisStroke}
+                                stroke={themeObject.barSelectedColor}
                                 yAxisId='left'
                                 className='yAxis'
-                            />
+                            >
+                                <Label
+                                    value='value_bar'
+                                    position='top'
+                                    dy={-20}
+                                    fontSize={14}
+                                    className='xAxisLabel'
+                                    fill={themeObject.barSelectedColor}
+                                />
+                            </YAxis>
+
                             <YAxis
-                                stroke={themeObject.axisStroke}
-                                yAxisId='right'
+                                stroke={themeObject.areaStroke}
                                 orientation='right'
+                                yAxisId='right'
                                 className='yAxis'
-                            />
+                            >
+                                <Label
+                                    value='value_area'
+                                    position='top'
+                                    dy={-20}
+                                    fontSize={14}
+                                    className='xAxisLabel'
+                                    fill={themeObject.areaStroke}
+                                />
+                            </YAxis>
+
                             <Legend
+                                formatter={value => (
+                                    <span style={{color: themeObject.textColorGrey}}>{value}</span>
+                                )}
                                 wrapperStyle={{
                                     paddingTop: '20px',
                                 }}
@@ -173,7 +195,7 @@ const Chart = ({data}: ChartProps) => {
                                 dataKey='value_bar'
                                 fill='url(#colorBar)'
                                 barSize={20}
-                                yAxisId='right'
+                                yAxisId='left'
                             ></Bar>
                             <defs>
                                 <linearGradient id='colorArea' x1='0' y1='0' x2='0' y2='1'>
@@ -195,7 +217,7 @@ const Chart = ({data}: ChartProps) => {
                                 type='monotone'
                                 fill='url(#colorArea)'
                                 stroke={themeObject.areaStroke}
-                                yAxisId='left'
+                                yAxisId='right'
                                 dot={
                                     <SelectedDot
                                         selectedFilters={selectedFilters}
@@ -231,6 +253,7 @@ const Chart = ({data}: ChartProps) => {
                             })}
 
                             <Brush
+                                y={450}
                                 className='brush'
                                 dataKey='time'
                                 travellerWidth={10}
@@ -249,7 +272,7 @@ const Chart = ({data}: ChartProps) => {
                                         dataKey='value_bar'
                                         fill={themeObject.barSelectedColor}
                                         barSize={20}
-                                        yAxisId='right'
+                                        yAxisId='left'
                                     >
                                         {data.map((entry, index) => (
                                             <Cell
@@ -269,7 +292,7 @@ const Chart = ({data}: ChartProps) => {
                                         type='monotone'
                                         fill={themeObject.areaStopColorStart}
                                         stroke={themeObject.areaStroke}
-                                        yAxisId='left'
+                                        yAxisId='right'
                                         dot={
                                             <SelectedDot
                                                 selectedFilters={selectedFilters}
