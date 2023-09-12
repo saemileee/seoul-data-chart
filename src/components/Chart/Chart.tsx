@@ -191,7 +191,6 @@ const Chart = ({data}: ChartProps) => {
                             </defs>
                             <Area
                                 isAnimationActive={false}
-                                // key={selectedFilters}
                                 dataKey='value_area'
                                 type='monotone'
                                 fill='url(#colorArea)'
@@ -266,7 +265,6 @@ const Chart = ({data}: ChartProps) => {
                                     </Bar>
                                     <Area
                                         isAnimationActive={false}
-                                        // key={selectedFilters}
                                         dataKey='value_area'
                                         type='monotone'
                                         fill={themeObject.areaStopColorStart}
