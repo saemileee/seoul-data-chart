@@ -8,13 +8,13 @@ import React from 'react';
 
 const Main = () => {
     const {toggleTheme, themeMode} = useTheme();
-    const {data: chartData, isLoading, error} = useChart(getSeoulInfo);
+    const {chartData, isLoading, error} = useChart(getSeoulInfo);
 
     if (error) <div>차트를 불러오지 못했습니다.</div>;
     return (
         <StyledContainer>
             <h3>시계열 차트</h3>
-            {!isLoading && chartData.length > 0 && <Chart data={chartData} />}
+            {!isLoading && chartData.data.length > 0 && <Chart chartData={chartData} />}
             <ThemeToggle toggle={toggleTheme} mode={themeMode} />
         </StyledContainer>
     );
