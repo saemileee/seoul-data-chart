@@ -1,11 +1,12 @@
 import {useEffect, useState} from 'react';
 import useFetch from './useFetch';
-import {ChartData, ResponseData} from '../types/chartInfo';
+import {ChartData} from '../types/chartInfo';
 import extractCommonTime from '../utils/extractCommonTime';
 import formatDate from '../utils/formatDate';
+import {getSeoulInfo} from '../api/seoulInfo';
 
-const useChart = (cb: () => Promise<ResponseData>) => {
-    const {state: fetchState} = useFetch(cb);
+const useChart = () => {
+    const {state: fetchState} = useFetch(getSeoulInfo);
     const {data: fetchData, isLoading, error} = fetchState;
     const [data, setData] = useState<ChartData>({
         commonTime: '',

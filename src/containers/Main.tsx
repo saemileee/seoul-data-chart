@@ -1,4 +1,3 @@
-import {getSeoulInfo} from '../api/seoulInfo';
 import Chart from '../components/Chart/Chart';
 import useChart from '../hooks/useChart';
 import styled from 'styled-components';
@@ -7,7 +6,7 @@ import ThemeToggle from '../components/ThemeToggle';
 
 const Main = () => {
     const {toggleTheme, themeMode} = useTheme();
-    const {chartData, isLoading, error} = useChart(getSeoulInfo);
+    const {chartData, isLoading, error} = useChart();
 
     if (error) <div>차트를 불러오지 못했습니다.</div>;
     return (
