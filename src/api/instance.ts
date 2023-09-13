@@ -12,6 +12,6 @@ class AxiosInstance {
     }
 }
 
-const httpClient = new AxiosInstance(BASE_URL || '');
+const httpClient = new AxiosInstance(BASE_URL);
 
 export const seoulAPI = httpClient.instance('/response');

@@ -32,11 +32,15 @@ import DeferredComponent from '../DeferredComponent';
 
 interface ChartProps {
     chartData: ChartData;
+    initZoomStartIdx?: number;
+    initZoomEndIdx?: number;
 }
 
-const INIT_START_IDX = 0;
-
-const Chart = ({chartData}: ChartProps) => {
+const Chart = ({
+    chartData,
+    initZoomStartIdx = 0,
+    initZoomEndIdx = chartData.data.length - 1,
+}: ChartProps) => {
     const {themeMode, themeObject} = useTheme();
 
     const gridRef = useRef<CartesianGrid>(null);
@@ -51,11 +55,14 @@ const Chart = ({chartData}: ChartProps) => {
 
     const {commonTime, data} = chartData;
 
-    const INIT_END_IDX = data.length - 1;
-    const [startIdx, setStartIdx] = useState(INIT_START_IDX);
-    const [endIdx, setEndIdx] = useState(INIT_END_IDX);
-    const [zoomCounts, setZoomCounts] = useState(0);
-    const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
+    const [zoom, setZoom] = useState({
+        startIdx: initZoomStartIdx,
+        endIdx: initZoomEndIdx,
+        counts: 0,
+    });
+
+    const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([initZoomStartIdx, initZoomEndIdx]);
+
     const {selectedFilters, filterOptions, toggleFilter, resetFilter} = useChartFilter('id', data);
 
     const {
@@ -70,34 +77,27 @@ const Chart = ({chartData}: ChartProps) => {
 
     useEffect(() => {
         if (wheelZoomIdx?.length) {
-            setStartIdx(wheelZoomIdx[0]);
-            setEndIdx(wheelZoomIdx[1]);
-            setZoomCounts(prev => prev + 1);
+            setZoom({startIdx: wheelZoomIdx[0], endIdx: wheelZoomIdx[1], counts: zoom.counts + 1});
         }
     }, [wheelZoomIdx]);
 
     useEffect(() => {
         if (dragNDropIdx?.length) {
-            setStartIdx(dragNDropIdx[0]);
-            setEndIdx(dragNDropIdx[1]);
-            setZoomCounts(prev => prev + 1);
+            setZoom({startIdx: dragNDropIdx[0], endIdx: dragNDropIdx[1], counts: zoom.counts + 1});
         }
     }, [dragNDropIdx]);
 
     const resetZoom = () => {
-        if (startIdx !== INIT_START_IDX || endIdx !== INIT_END_IDX) {
-            setStartIdx(INIT_START_IDX);
-            setEndIdx(INIT_END_IDX);
-            setZoomCounts(prev => prev + 1);
+        if (zoom.startIdx !== initZoomStartIdx || zoom.endIdx !== initZoomEndIdx) {
+            setZoom({startIdx: initZoomStartIdx, endIdx: initZoomEndIdx, counts: zoom.counts + 1});
         }
     };
 
     const debounce = useDebounce();
 
-    const handleChangeBrush = (startIndex: number, endIndex: number) => {
+    const handleChangeBrush = (startIdx: number, endIdx: number) => {
         debounce(() => {
-            setStartIdx(startIndex!);
-            setEndIdx(endIndex!);
+            setZoom(prev => ({...prev, startIdx, endIdx}));
         }, 300);
     };
 
@@ -122,7 +122,7 @@ const Chart = ({chartData}: ChartProps) => {
                     {isZoomModeActive && dragBoxData && <DragZoomInBox dragBoxData={dragBoxData} />}
                     <ResponsiveContainer width='100%' height={550}>
                         <ComposedChart
-                            key={zoomCounts}
+                            key={zoom.counts}
                             data={data}
                             margin={{top: 35, right: 30, left: 20, bottom: 45}}
                         >
@@ -252,7 +252,9 @@ const Chart = ({chartData}: ChartProps) => {
                                 const {time, id} = data;
                                 return (
                                     <ReferenceArea
-                                        onWheel={e => zoomInOrOut(e, idx, startIdx, endIdx)}
+                                        onWheel={e =>
+                                            zoomInOrOut(e, idx, zoom.startIdx, zoom.endIdx)
+                                        }
                                         onMouseMove={e => {
                                             isZoomModeActive && drawBox(e);
                                         }}
@@ -287,11 +289,9 @@ const Chart = ({chartData}: ChartProps) => {
                                         ? themeObject.textColorLight
                                         : themeObject.zoomInBoxBg
                                 }
-                                startIndex={startIdx}
-                                endIndex={endIdx}
-                                onChange={e => {
-                                    handleChangeBrush(e.startIndex!, e.endIndex!);
-                                }}
+                                startIndex={zoom.startIdx}
+                                endIndex={zoom.endIdx}
+                                onChange={e => handleChangeBrush(e.startIndex!, e.endIndex!)}
                             >
                                 <ComposedChart width={1000} height={400} data={data}>
                                     <Bar
