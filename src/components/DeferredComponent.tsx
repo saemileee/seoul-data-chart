@@ -18,7 +18,7 @@ const DeferredComponent = ({children, loadingComponent}: DeferredComponentProps)
     return (
         <StyledDeferContainer>
             <div className='loading-container'>{!isDeferred && loadingComponent}</div>
-            <div style={{opacity: isDeferred ? 1 : 0}}>{children}</div>
+            <div style={{visibility: isDeferred ? 'visible' : 'hidden'}}>{children}</div>
         </StyledDeferContainer>
     );
 };
