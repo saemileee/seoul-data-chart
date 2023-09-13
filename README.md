@@ -177,7 +177,7 @@
 	    - 공통 시간대 날짜 형식으로 포맷팅
 	      https://github.com/saemileee/seoul-data-chart/blob/b11868a364e9c052f77f7078cf8c27a5122943d9/src/utils/formatDate.ts#L1-L28
 	
-	    - 패칭 함수 가공
+	    - 패치 데이터 가공
 	      https://github.com/saemileee/seoul-data-chart/blob/b11868a364e9c052f77f7078cf8c27a5122943d9/src/hooks/useChart.tsx#L16-L28
              </ul>
         </div>
@@ -342,7 +342,7 @@
 
 - [X] Recharts 컴포넌트 자체 이벤트 속성을 활용하여 상태 값 업데이트 하기
     
-    - Brush의 traveller를 활용하여 줌인/아웃, 구역 이동을 한 후 휠/드래그앤 드롭으로 줌 기능을 차례로 활용할 때 treveller가 잡은 영역을 기준으로 줌 기능을 실행시키도록 하였습니다.
+    - Brush의 traveller를 활용하여 줌인/아웃, 구역 이동을 한 후 휠/드래그앤 드롭으로 줌 기능을 차례로 활용할 때 treveller가 마지막으로 잡은 영역을 기준으로 줌 기능을 실행시키도록 하였습니다.
     
     - Brush 의 onChange 이벤트를 활용하여 traveller의 index 값을 받아 zoomIdx에 세팅하였습니다. 이 경우, onChange할 때 마다 변경 되는 idx 값은 연쇄적으로 활용되지 않다 판단하여 디바운싱 훅을 활용해 마지막 change 이벤트의 상태만 300ms가 지나면 업데이트 되도록 하였습니다.
     
@@ -372,7 +372,7 @@
         
 
 
-  |traveller 조정 후 상태 값 업데이트 X |traveller 조정 후 상태 값 업데이트 O |
+  |traveller 조정 후 상태 값 업데이트 X (index 초기화가 일어남) |traveller 조정 후 상태 값 업데이트 O |
   |----|----|
   |![버그](https://github.com/saemileee/seoul-data-chart/assets/68241138/bf15c973-5084-4755-b5fa-7e90b7ae209e)|![키 값 넣어서 index 조정](https://github.com/saemileee/seoul-data-chart/assets/68241138/acb1a915-b7c9-4d7d-b777-f51cd11c1e3f)|
       
