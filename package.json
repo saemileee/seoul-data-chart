@@ -9,7 +9,8 @@
         "preview": "vite preview",
         "postinstall": "husky install",
         "format": "prettier --cache --write .",
-        "lint": "eslint --cache ."
+        "lint": "eslint --cache .",
+        "buildCommand": "next build"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": "npm run format"
