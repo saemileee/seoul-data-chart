@@ -32,11 +32,15 @@ import DeferredComponent from '../DeferredComponent';
 
 interface ChartProps {
     chartData: ChartData;
+    initZoomStartIdx?: number;
+    initZoomEndIdx?: number;
 }
 
-const INIT_START_IDX = 0;
-
-const Chart = ({chartData}: ChartProps) => {
+const Chart = ({
+    chartData,
+    initZoomStartIdx = 0,
+    initZoomEndIdx = chartData.data.length - 1,
+}: ChartProps) => {
     const {themeMode, themeObject} = useTheme();
 
     const gridRef = useRef<CartesianGrid>(null);
@@ -51,10 +55,13 @@ const Chart = ({chartData}: ChartProps) => {
 
     const {commonTime, data} = chartData;
 
-    const INIT_END_IDX = data.length - 1;
-    const [zoom, setZoom] = useState({startIdx: INIT_START_IDX, endIdx: INIT_END_IDX, counts: 0});
+    const [zoom, setZoom] = useState({
+        startIdx: initZoomStartIdx,
+        endIdx: initZoomEndIdx,
+        counts: 0,
+    });
 
-    const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([INIT_START_IDX, INIT_END_IDX]);
+    const {zoomedIdx: wheelZoomIdx, zoomInOrOut} = useWheelZoom([initZoomStartIdx, initZoomEndIdx]);
 
     const {selectedFilters, filterOptions, toggleFilter, resetFilter} = useChartFilter('id', data);
 
@@ -81,8 +88,8 @@ const Chart = ({chartData}: ChartProps) => {
     }, [dragNDropIdx]);
 
     const resetZoom = () => {
-        if (zoom.startIdx !== INIT_START_IDX || zoom.endIdx !== INIT_END_IDX) {
-            setZoom({startIdx: INIT_START_IDX, endIdx: INIT_END_IDX, counts: zoom.counts + 1});
+        if (zoom.startIdx !== initZoomStartIdx || zoom.endIdx !== initZoomEndIdx) {
+            setZoom({startIdx: initZoomStartIdx, endIdx: initZoomEndIdx, counts: zoom.counts + 1});
         }
     };
 
