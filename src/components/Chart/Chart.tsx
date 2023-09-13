@@ -264,7 +264,7 @@ const Chart = ({
                                         onMouseUp={() => {
                                             isZoomModeActive && endDrawBox(idx);
                                         }}
-                                        // key={time}
+                                        key={time}
                                         yAxisId='right'
                                         x1={time}
                                         x2={time}
@@ -291,9 +291,7 @@ const Chart = ({
                                 }
                                 startIndex={zoom.startIdx}
                                 endIndex={zoom.endIdx}
-                                onChange={e => {
-                                    handleChangeBrush(e.startIndex!, e.endIndex!);
-                                }}
+                                onChange={e => handleChangeBrush(e.startIndex!, e.endIndex!)}
                             >
                                 <ComposedChart width={1000} height={400} data={data}>
                                     <Bar
