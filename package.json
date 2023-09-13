@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "json-server --watch db.json --port 4000 & vite",
+        "dev": "vite",
         "build": "GENERATE_SOURCEMAP=false && tsc && vite build",
         "preview": "vite preview",
         "postinstall": "husky install",
