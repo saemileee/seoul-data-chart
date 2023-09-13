@@ -166,8 +166,7 @@
     - 데스크탑에서 차트를 확인할 경우 `마우스 휠`을 활용하여 보다 간편하게 차트를 확대/축소 할 수 있도록 기능을 구현하였습니다.
     - onMouseWheel 이벤트를 활용하여 줌 확대/축소 되어 보여질 구역의 `startIdx`와 `endIdx`를 상태로 저장하고, brush 컴포넌트의 초기 렌더링 구역을 지정할 수 있는 `startIndex`, `endIndex` 속성을 활용하여 구현하였습니다.
     - 사용자의 마우스가 위치한 구역을 기준으로 확대/축소 할 수 있도록 useWheelZoom 커스텀 훅 내 줌인/줌아웃 함수에서는 마우스가 가리키고 있는 `fixedIndex 값`을 기준으로 좌/우의 비율을 확인하여 비율에 맞춰 인덱스가 줄어들고 늘어나며 확대/축소를 할 수 있도록 하였습니다.
-      ![Uploading 마우스 휠 줌.gif…]()
-
+      ![마우스 휠 줌](https://github.com/saemileee/seoul-data-chart/assets/68241138/7dcee88b-6573-423c-9d13-2816eb470f0c)
 
     - 마우스 휠 이벤트 추가
       https://github.com/saemileee/seoul-data-chart/blob/b11868a364e9c052f77f7078cf8c27a5122943d9/src/components/Chart/Chart.tsx#L254-L257
@@ -179,6 +178,9 @@
     - 클릭 필터링 이벤트와 인터랙션이 겹치는 것을 방지하기 위해 토글을 활용하여 `줌 모드를 on/off` 할 수 있습니다.
     - 라이브러리에서 제공하는 컴포넌트인 `ReferenceArea`에 `mousedown/move/up 이벤트`를 추가하여 드래그앤 드롭한 인덱스를 확인하고 `brush의 start/endIndex에 반영`되도록 하였습니다.
     - 더불어 mousemove 이벤트를 통해 사용자가 선택하고 있는 영역을 박스 형태로 그릴 수 있게하였습니다. mousedown했던 좌표 값을 기준으로 좌/우측 움직임을 파악하고, 박스가 렌더링 되는 위치 값이 좌측을 기준으로 할지, 우측을 기준으로 할 지 정한 후 기준점과 현재 마우스 위치의 차의 절대값 만큼 박스의 폭이 정해집니다.
+      
+      ![드래그앤 드롭 줌](https://github.com/saemileee/seoul-data-chart/assets/68241138/baf6270c-a559-4e5d-b53b-78c9519b1f8c)
+
     - mouse event 적용
       https://github.com/saemileee/seoul-data-chart/blob/b11868a364e9c052f77f7078cf8c27a5122943d9/src/components/Chart/Chart.tsx#L251-L279
     - useDrageNDropZoom
@@ -187,6 +189,9 @@
 - 파라미터를 활용한 필터링
     - 필터 선택 시 `쿼리스트링 형태`로 파라미터가 추가되고, 해당 url을 활용하여 `필터링 된 페이지에 접근`할 수 있습니다.
     - 유효하지 않은 쿼리스트링 값이 들어오면 파라미터는 초기화 되거나, `유효한 값까지만 필터링` 되도록 하였습니다.
+      
+      ![파라미터](https://github.com/saemileee/seoul-data-chart/assets/68241138/afbc605d-98a2-4873-8c3a-13a6d6719aa6)
+
       
 - 다크모드
     - 사용자의 기호를 고려하여 다크모드 차트를 구현하였습니다. contextAPI를 활용하여 테마 상태를 저장하고 `styled-components`에서 제공하는 `StyledProvider`를 통해 스타일드 컴포넌트에 props를 전달할 수 있도록 하였습니다.
@@ -205,11 +210,18 @@
         1. `조건문`에 따라 리턴으로 children 렌더링 시 isDeferred 상태가 변경된 후 컴포넌트를 렌더링하기 때문에 svg 컴포넌트가 그려지는 동안 빈화면이 나와 로딩 시간을 의도적으로 부여한 의미가 퇴색됩니다.
         2. `display` 스타일 속성 사용 시 none ⇒ block 으로 변경 시 `리페인트` 뿐만 아니라, `레이아웃이 재계산 되는 리플로우`가 발생해 들어 빈화면이 보이는 시간이 좀 더 지연 되어 보였습니다.
         3. `visibility` 스타일 속성은 hidden인 상태에서도 레이아웃은 렌더링 되기 때문에 `리페인트만 발생`하여 display 속성이 변경될 때 보다 성능이 향상되고 로딩 컴포넌트가 사라짐과 동시에 화면에 차트가 노출됩니다.
+
+     |DeferredComponent 사용 전|DeferredComponent 사용 후|
+     |----|----|
+     |![사용 전](https://github.com/saemileee/seoul-data-chart/assets/68241138/c0f1aa26-367b-48e7-9346-3cee6970751d)|![로딩 임시 지연](https://github.com/saemileee/seoul-data-chart/assets/68241138/b2317e5d-3162-40c8-b01b-89ce8af61a1d)|
+  	- 임시로 디바운싱 타임을 오래도록 지정하여 엘리먼트를 확인하였을 때 이미 svg 태그가 그려진 상태로 로딩 컴포넌트가 동작합니다.
+
+
            
 - Recharts 컴포넌트에 키 값 부여하여 리렌더링하기
     - recharts의 컴포넌트 특성 상 차트를 그리기 위한 특정 컴포넌트들은 관련 컴포넌트가 리렌더링 되지 않는 이상, 컴포넌트에 직접적으로 주입한 props 상태값이 변화해도 리렌더링 되지 않았습니다.
-    - 가령  마우스 휠과 드래그앤 드롭을 통해 brush 컴포넌트에 주입된 startIdx와 endIdx를 변경했다 하더라도, 차트와 brush 컴포넌트가 리렌더링 되지 않았습니다. 이와 같은 문제는 recharts 컴포넌트들의 속성 중 key를 활용하여 해결하였습니다.
-    - recharts 컴포넌트는 키 값이 변경될 때 마다 컴포넌트를 재렌더링 합니다. 해당 prop 에는 string | number | null | undefined 타입이 들어가도록 지정되어 있기 때문에 zoom.counts를 상태를 만들어 zoom.startIdx/zoom.endIdx가 변경될 때 마다 zoom.counts도 함께 카운팅 하여 상태를 변경하였습니다.
+    - 가령  마우스 휠과 드래그앤 드롭을 통해 brush 컴포넌트에 주입된 `startIdx와 endIdx이 변경`됐다 하더라도, `차트와 brush 컴포넌트가 리렌더링 되지 않았습니다`. 이와 같은 문제는 recharts 컴포넌트들의 속성 중 key를 활용하여 해결하였습니다.
+    - recharts 컴포넌트는 키 값이 변경될 때 마다 컴포넌트를 재렌더링 합니다. 해당 prop 에는 `string | number | null | undefined` 타입이 들어가도록 지정되어 있기 때문에 `zoom.counts`를 상태를 만들어 zoom.startIdx/zoom.endIdx가 변경될 때 마다 zoom.counts도 함께 카운팅 하여 상태를 변경하였습니다.
       
 - Recharts 컴포넌트 자체 이벤트 속성을 활용하여 상태 값 업데이트 하기
     - Brush의 traveller를 활용하여 줌인/아웃, 구역 이동을 한 후 휠/드래그앤 드롭으로 줌 기능을 차례로 활용할 때 treveller가 잡은 영역을 기준으로 줌 기능을 실행시키도록 하였습니다.
