@@ -24,8 +24,11 @@ const Main = () => {
 
 export default Main;
 const StyledContainer = styled.div`
+    margin-top: 50px;
+
     h3 {
         text-align: center;
+        color: ${props => props.theme.textColorDefault};
     }
     width: 100%;
     display: flex;
