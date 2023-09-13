@@ -26,7 +26,7 @@ const DeferredComponent = ({children, loadingComponent}: DeferredComponentProps)
 export default DeferredComponent;
 
 const StyledDeferContainer = styled.div`
-    position: relative;
+    position: initial;
     .loading-container {
         position: absolute;
         z-index: 999;
