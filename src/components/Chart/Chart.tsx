@@ -340,14 +340,7 @@ const Chart = ({
 export default Chart;
 
 const StyledChartContainer = styled.div`
-    min-width: 320px;
     position: initial;
-    padding: 25px 0 20px 0;
-    margin-top: 32px;
-    box-sizing: border-box;
-    border-radius: 20px;
-    background-color: ${props => props.theme.bgColor};
-    box-shadow: 0 0 20px ${props => props.theme.boxShadow};
     .yAxis {
         user-select: none;
     }
