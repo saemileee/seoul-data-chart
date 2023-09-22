@@ -1,6 +1,9 @@
 const formatDate = (inputDateStr: string) => {
+    const regex = /:$/;
+    const newInputDate = regex.test(inputDateStr) ? inputDateStr + '00' : inputDateStr;
+
     // 주어진 날짜 데이터를 Date 객체로 파싱
-    const date = new Date(inputDateStr);
+    const date = new Date(newInputDate);
 
     // 시, 분, 초 추출
     const hours = date.getHours();

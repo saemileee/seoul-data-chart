@@ -12,7 +12,7 @@ const extractCommonTime = (data: string[]) => {
         commonPrefix = commonPrefix.slice(0, i);
     }
 
-    return commonPrefix;
+    return commonPrefix.replace(/-/g, '/');
 };
 
 export default extractCommonTime;
